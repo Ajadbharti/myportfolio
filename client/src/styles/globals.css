@@ -1,0 +1,14 @@
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #020617;
+  color: white;
+  font-family: Inter, sans-serif;
+}
+
+section {
+  padding-top: 100px;
+  padding-bottom: 100px;
+}
