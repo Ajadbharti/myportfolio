@@ -1,8 +1,6 @@
 import { motion } from "framer-motion";
 import { FaGithub, FaExternalLinkAlt } from "react-icons/fa";
-// import apnaStore from "../../assets/images/projects/apna-store.png";
-// import fitnessPortal from "../../assets/images/projects/fitness-portal.png";
-// import portfolioImg from "../../assets/images/projects/portfolio.png";
+import { useTheme } from "../../context/ThemeContext";
 
 const projects = [
   {
@@ -27,20 +25,30 @@ const projects = [
     title: "Portfolio Website",
     image: "https://placehold.co/600x400?text=Portfolio",
     description:
-      "Modern responsive portfolio built using React, Tailwind and Framer Motion.",
-    tech: ["React", "Tailwind", "Framer Motion"],
+      "Modern responsive portfolio built using React, Tailwind CSS and Framer Motion.",
+    tech: ["React", "Tailwind CSS", "Framer Motion"],
     github: "https://github.com/Ajadbharti",
     live: "#",
   },
 ];
 
 function Projects() {
+  const { dark } = useTheme();
+
   return (
-    <section id="projects" className="bg-slate-900 py-24 text-white">
+    <section
+      id="projects"
+      className={`py-24 transition-all duration-300 ${
+        dark
+          ? "bg-slate-900 text-white"
+          : "bg-slate-100 text-slate-900"
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-6">
 
+        {/* Heading */}
         <div className="text-center mb-16">
-          <p className="text-blue-500 font-semibold uppercase">
+          <p className="text-blue-600 font-semibold uppercase tracking-widest">
             Projects
           </p>
 
@@ -48,11 +56,16 @@ function Projects() {
             Featured Projects
           </h2>
 
-          <p className="text-gray-400 mt-4">
+          <p
+            className={`mt-4 ${
+              dark ? "text-gray-400" : "text-slate-600"
+            }`}
+          >
             Some projects I've built using modern web technologies.
           </p>
         </div>
 
+        {/* Project Cards */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
 
           {projects.map((project, index) => (
@@ -61,41 +74,65 @@ function Projects() {
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.15 }}
-              className="bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 hover:border-blue-500 transition"
+              transition={{ duration: 0.5, delay: index * 0.15 }}
+              className={`rounded-2xl overflow-hidden border transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl ${
+                dark
+                  ? "bg-slate-950 border-slate-800 hover:border-blue-500"
+                  : "bg-white border-slate-200 hover:border-blue-500"
+              }`}
             >
-              <div className="h-48 bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center text-6xl">
-                🚀
+              {/* Image */}
+              <div className="overflow-hidden">
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  className="w-full h-52 object-cover transition-transform duration-500 hover:scale-110"
+                />
               </div>
 
+              {/* Content */}
               <div className="p-6">
 
                 <h3 className="text-2xl font-bold mb-3">
                   {project.title}
                 </h3>
 
-                <p className="text-gray-400 mb-5">
+                <p
+                  className={`mb-5 leading-7 ${
+                    dark ? "text-gray-400" : "text-slate-600"
+                  }`}
+                >
                   {project.description}
                 </p>
 
+                {/* Tech Stack */}
                 <div className="flex flex-wrap gap-2 mb-6">
                   {project.tech.map((tech) => (
                     <span
                       key={tech}
-                      className="bg-blue-600/20 text-blue-400 px-3 py-1 rounded-full text-sm"
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        dark
+                          ? "bg-blue-500/20 text-blue-300"
+                          : "bg-blue-100 text-blue-700"
+                      }`}
                     >
                       {tech}
                     </span>
                   ))}
                 </div>
 
-                <div className="flex gap-4">
+                {/* Buttons */}
+                <div className="flex gap-3">
 
                   <a
                     href={project.github}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-2 bg-slate-800 px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${
+                      dark
+                        ? "bg-slate-800 hover:bg-blue-600 text-white"
+                        : "bg-slate-200 hover:bg-blue-600 hover:text-white"
+                    }`}
                   >
                     <FaGithub />
                     GitHub
@@ -105,7 +142,7 @@ function Projects() {
                     href={project.live}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-2 bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
                   >
                     <FaExternalLinkAlt />
                     Live

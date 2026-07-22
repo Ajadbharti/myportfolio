@@ -19,103 +19,170 @@ function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [meetingOpen, setMeetingOpen] = useState(false);
+
   const { dark, setDark } = useTheme();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
 
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <header
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        scrolled
-          ? "py-3 glass border-b border-white/10 shadow-[0_8px_32px_-12px_rgba(139,92,246,0.25)]"
-          : "py-5 bg-transparent border-b border-transparent"
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        <a
-          href="#home"
-          className="text-2xl font-bold text-white tracking-tight"
+    <>
+      <header className="fixed top-5 left-0 right-0 z-50 px-4">
+        <div
+          className={`max-w-7xl mx-auto rounded-full transition-all duration-500
+          ${
+            dark
+              ? "bg-[#0F172A]/75 backdrop-blur-2xl border border-slate-700 shadow-[0_20px_60px_rgba(37,99,235,.18)]"
+              : "bg-white/75 backdrop-blur-2xl border border-slate-200 shadow-xl"
+          }
+          ${scrolled ? "py-3" : "py-4"}
+          px-8 flex items-center justify-between`}
         >
-          Ajad<span className="gradient-text">.</span>
-        </a>
-
-        {/* Desktop Menu */}
-        <nav className="hidden lg:flex items-center gap-1 glass rounded-full px-2 py-2">
-          {links.map((link) => (
-            <a
-              key={link.name}
-              href={link.href}
-              className="text-sm text-gray-300 hover:text-white px-4 py-2 rounded-full hover:bg-white/10 transition-all duration-200"
-            >
-              {link.name}
-            </a>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-4">
-          <div className="hidden sm:block glass rounded-full p-1.5">
-            <DarkModeSwitch
-              checked={dark}
-              onChange={setDark}
-              size={20}
-            />
-          </div>
-
-          <button
-            onClick={() => setMeetingOpen(true)}
-            className="hidden md:inline-block px-5 py-2.5 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400 hover:shadow-[0_0_25px_-3px_rgba(217,70,239,0.6)] transition-shadow duration-300"
+          {/* Logo */}
+          <a
+            href="#home"
+            className={`text-3xl font-extrabold tracking-tight transition ${
+              dark ? "text-white" : "text-slate-900"
+            }`}
           >
-            Book a Meeting
-          </button>
+            <span className="text-blue-600">A</span>jad
+            <span className="text-cyan-400">.</span>
+          </a>
 
-          <button
-            className="lg:hidden text-3xl text-white glass rounded-full p-1.5"
-            onClick={() => setOpen(!open)}
-            aria-label="Toggle menu"
-          >
-            {open ? <HiX /> : <HiMenuAlt3 />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      {open && (
-        <div className="lg:hidden mx-4 mt-3 glass rounded-3xl overflow-hidden border border-white/10">
-          <nav className="flex flex-col py-2">
+          {/* Desktop Menu */}
+          <nav className="hidden lg:flex items-center gap-2">
             {links.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
-                onClick={() => setOpen(false)}
-                className="py-3 text-center text-gray-300 hover:bg-white/10 hover:text-white transition"
+                className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300
+                ${
+                  dark
+                    ? "text-slate-300 hover:bg-blue-600 hover:text-white hover:shadow-lg"
+                    : "text-slate-700 hover:bg-blue-600 hover:text-white hover:shadow-lg"
+                }`}
               >
                 {link.name}
               </a>
             ))}
+          </nav>
+
+          {/* Right Side */}
+          <div className="flex items-center gap-3">
+
+            <div
+              className={`hidden sm:flex items-center justify-center p-2 rounded-full transition
+              ${
+                dark
+                  ? "bg-slate-800 border border-slate-700"
+                  : "bg-slate-100 border border-slate-200"
+              }`}
+            >
+              <DarkModeSwitch
+                checked={dark}
+                onChange={setDark}
+                size={20}
+              />
+            </div>
 
             <button
-              onClick={() => {
-                setOpen(false);
-                setMeetingOpen(true);
-              }}
-              className="mx-4 my-3 px-5 py-3 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400"
+              onClick={() => setMeetingOpen(true)}
+              className="hidden md:inline-flex items-center justify-center
+              px-6 py-3 rounded-full
+              text-sm font-semibold text-white
+              bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-500
+              hover:scale-105
+              hover:shadow-[0_15px_40px_rgba(37,99,235,.4)]
+              transition-all duration-300"
             >
               Book a Meeting
             </button>
-          </nav>
-        </div>
-      )}
 
-      <BookMeetingModal
-        isOpen={meetingOpen}
-        onClose={() => setMeetingOpen(false)}
-      />
-    </header>
+            <button
+              onClick={() => setOpen(!open)}
+              className={`lg:hidden p-2 rounded-full transition
+              ${
+                dark
+                  ? "bg-slate-800 text-white"
+                  : "bg-slate-100 text-slate-900"
+              }`}
+            >
+              {open ? <HiX size={28} /> : <HiMenuAlt3 size={28} />}
+            </button>
+          </div>
+        </div>
+                {/* Mobile Menu */}
+        {open && (
+          <div
+            className={`lg:hidden mt-4 overflow-hidden rounded-3xl transition-all duration-300
+            ${
+              dark
+                ? "bg-[#0F172A]/90 backdrop-blur-2xl border border-slate-700 shadow-2xl"
+                : "bg-white/90 backdrop-blur-2xl border border-slate-200 shadow-xl"
+            }`}
+          >
+            <nav className="flex flex-col p-4">
+              {links.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setOpen(false)}
+                  className={`py-3 px-5 rounded-xl text-center font-medium transition-all duration-300
+                  ${
+                    dark
+                      ? "text-slate-300 hover:bg-blue-600 hover:text-white"
+                      : "text-slate-700 hover:bg-blue-600 hover:text-white"
+                  }`}
+                >
+                  {link.name}
+                </a>
+              ))}
+
+              <button
+                onClick={() => {
+                  setOpen(false);
+                  setMeetingOpen(true);
+                }}
+                className="mt-4 py-3 rounded-full text-white font-semibold
+                bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-500
+                hover:scale-[1.02]
+                transition-all duration-300"
+              >
+                📅Shedule a metting 
+              </button>
+
+              <div className="flex justify-center mt-5 sm:hidden">
+                <div
+                  className={`p-2 rounded-full ${
+                    dark
+                      ? "bg-slate-800 border border-slate-700"
+                      : "bg-slate-100 border border-slate-200"
+                  }`}
+                >
+                  <DarkModeSwitch
+                    checked={dark}
+                    onChange={setDark}
+                    size={20}
+                  />
+                </div>
+              </div>
+            </nav>
+          </div>
+        )}
+
+        <BookMeetingModal
+          isOpen={meetingOpen}
+          onClose={() => setMeetingOpen(false)}
+        />
+      </header>
+    </>
   );
 }
 
