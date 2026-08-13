@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { HiMenuAlt3, HiX } from "react-icons/hi";
 import { DarkModeSwitch } from "react-toggle-dark-mode";
 import { useTheme } from "../../context/ThemeContext";
@@ -24,66 +25,127 @@ function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      setScrolled(window.scrollY > 35);
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   return (
     <>
-      <header className="fixed top-5 left-0 right-0 z-50 px-4">
-        <div
-          className={`max-w-7xl mx-auto rounded-full transition-all duration-500
-          ${
-            dark
-              ? "bg-[#0F172A]/75 backdrop-blur-2xl border border-slate-700 shadow-[0_20px_60px_rgba(37,99,235,.18)]"
-              : "bg-white/75 backdrop-blur-2xl border border-slate-200 shadow-xl"
-          }
-          ${scrolled ? "py-3" : "py-4"}
-          px-8 flex items-center justify-between`}
+      {/* =========================================
+          NAVBAR
+      ========================================= */}
+
+      <header className="fixed left-0 right-0 top-0 z-50">
+        <motion.div
+          layout
+          initial={false}
+          animate={{
+            width: scrolled ? "calc(100% - 32px)" : "100%",
+            maxWidth: scrolled ? "1152px" : "100%",
+            y: scrolled ? 16 : 0,
+            borderRadius: scrolled ? 999 : 0,
+          }}
+          transition={{
+            layout: {
+              type: "spring",
+              stiffness: 260,
+              damping: 28,
+              mass: 0.7,
+            },
+            default: {
+              duration: 0.45,
+              ease: [0.22, 1, 0.36, 1],
+            },
+          }}
+          className={`
+            mx-auto flex items-center justify-between
+            border
+            px-6 lg:px-10
+            ${
+              scrolled
+                ? "py-3"
+                : "py-5"
+            }
+            ${
+              dark
+                ? "border-white/10 bg-[#0F172A]/85 text-white backdrop-blur-2xl"
+                : "border-slate-200 bg-white/90 text-slate-900 backdrop-blur-2xl"
+            }
+            ${
+              scrolled
+                ? dark
+                  ? "shadow-[0_20px_60px_rgba(37,99,235,0.18)]"
+                  : "shadow-[0_15px_45px_rgba(15,23,42,0.12)]"
+                : ""
+            }
+          `}
+          style={{
+            willChange: "width, max-width, transform, border-radius",
+          }}
         >
-          {/* Logo */}
+          {/* =====================================
+              LOGO
+          ===================================== */}
+
           <a
             href="#home"
-            className={`text-3xl font-extrabold tracking-tight transition ${
-              dark ? "text-white" : "text-slate-900"
-            }`}
+            onClick={() => setOpen(false)}
+            className="shrink-0 text-3xl font-extrabold tracking-tight"
           >
-            <span className="text-blue-600">A</span>jad
+            <span className="text-blue-600">A</span>
+            jad
             <span className="text-cyan-400">.</span>
           </a>
 
-          {/* Desktop Menu */}
-          <nav className="hidden lg:flex items-center gap-2">
+          {/* =====================================
+              DESKTOP MENU
+          ===================================== */}
+
+          <nav className="hidden items-center gap-1 lg:flex">
             {links.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300
-                ${
-                  dark
-                    ? "text-slate-300 hover:bg-blue-600 hover:text-white hover:shadow-lg"
-                    : "text-slate-700 hover:bg-blue-600 hover:text-white hover:shadow-lg"
-                }`}
+                className={`
+                  rounded-full px-4 py-2
+                  text-sm font-medium
+                  transition-all duration-200
+                  ${
+                    dark
+                      ? "text-slate-300 hover:bg-blue-600 hover:text-white"
+                      : "text-slate-700 hover:bg-blue-600 hover:text-white"
+                  }
+                `}
               >
                 {link.name}
               </a>
             ))}
           </nav>
 
-          {/* Right Side */}
-          <div className="flex items-center gap-3">
+          {/* =====================================
+              RIGHT SIDE
+          ===================================== */}
 
+          <div className="flex shrink-0 items-center gap-3">
+            {/* Dark Mode */}
             <div
-              className={`hidden sm:flex items-center justify-center p-2 rounded-full transition
-              ${
-                dark
-                  ? "bg-slate-800 border border-slate-700"
-                  : "bg-slate-100 border border-slate-200"
-              }`}
+              className={`
+                flex items-center justify-center
+                rounded-full p-2
+                ${
+                  dark
+                    ? "border border-slate-700 bg-slate-800"
+                    : "border border-slate-200 bg-slate-100"
+                }
+              `}
             >
               <DarkModeSwitch
                 checked={dark}
@@ -92,41 +154,82 @@ function Navbar() {
               />
             </div>
 
+            {/* Book Meeting */}
             <button
               onClick={() => setMeetingOpen(true)}
-              className="hidden md:inline-flex items-center justify-center
-              px-6 py-3 rounded-full
-              text-sm font-semibold text-white
-              bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-500
-              hover:scale-105
-              hover:shadow-[0_15px_40px_rgba(37,99,235,.4)]
-              transition-all duration-300"
+              className="
+                hidden md:inline-flex
+                items-center justify-center
+                rounded-full
+                bg-gradient-to-r
+                from-blue-600
+                via-cyan-500
+                to-blue-500
+                px-6 py-3
+                text-sm font-semibold text-white
+                transition-transform duration-200
+                hover:scale-105
+                hover:shadow-[0_12px_35px_rgba(37,99,235,0.35)]
+              "
             >
               Book a Meeting
             </button>
 
+            {/* Mobile Menu */}
             <button
+              type="button"
               onClick={() => setOpen(!open)}
-              className={`lg:hidden p-2 rounded-full transition
-              ${
-                dark
-                  ? "bg-slate-800 text-white"
-                  : "bg-slate-100 text-slate-900"
-              }`}
+              aria-label="Toggle menu"
+              className={`
+                rounded-full p-2
+                lg:hidden
+                ${
+                  dark
+                    ? "bg-slate-800 text-white"
+                    : "bg-slate-100 text-slate-900"
+                }
+              `}
             >
-              {open ? <HiX size={28} /> : <HiMenuAlt3 size={28} />}
+              {open ? (
+                <HiX size={27} />
+              ) : (
+                <HiMenuAlt3 size={27} />
+              )}
             </button>
           </div>
-        </div>
-                {/* Mobile Menu */}
+        </motion.div>
+
+        {/* =========================================
+            MOBILE MENU
+        ========================================= */}
+
         {open && (
-          <div
-            className={`lg:hidden mt-4 overflow-hidden rounded-3xl transition-all duration-300
-            ${
-              dark
-                ? "bg-[#0F172A]/90 backdrop-blur-2xl border border-slate-700 shadow-2xl"
-                : "bg-white/90 backdrop-blur-2xl border border-slate-200 shadow-xl"
-            }`}
+          <motion.div
+            initial={{
+              opacity: 0,
+              y: -10,
+              scale: 0.98,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              scale: 1,
+            }}
+            transition={{
+              duration: 0.25,
+              ease: "easeOut",
+            }}
+            className={`
+              mx-4 mt-3 overflow-hidden
+              rounded-3xl border
+              backdrop-blur-2xl
+              lg:hidden
+              ${
+                dark
+                  ? "border-slate-700 bg-[#0F172A]/95 shadow-2xl"
+                  : "border-slate-200 bg-white/95 shadow-xl"
+              }
+            `}
           >
             <nav className="flex flex-col p-4">
               {links.map((link) => (
@@ -134,48 +237,48 @@ function Navbar() {
                   key={link.name}
                   href={link.href}
                   onClick={() => setOpen(false)}
-                  className={`py-3 px-5 rounded-xl text-center font-medium transition-all duration-300
-                  ${
-                    dark
-                      ? "text-slate-300 hover:bg-blue-600 hover:text-white"
-                      : "text-slate-700 hover:bg-blue-600 hover:text-white"
-                  }`}
+                  className={`
+                    rounded-xl px-5 py-3
+                    text-center font-medium
+                    transition-all duration-200
+                    ${
+                      dark
+                        ? "text-slate-300 hover:bg-blue-600 hover:text-white"
+                        : "text-slate-700 hover:bg-blue-600 hover:text-white"
+                    }
+                  `}
                 >
                   {link.name}
                 </a>
               ))}
 
               <button
+                type="button"
                 onClick={() => {
                   setOpen(false);
                   setMeetingOpen(true);
                 }}
-                className="mt-4 py-3 rounded-full text-white font-semibold
-                bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-500
-                hover:scale-[1.02]
-                transition-all duration-300"
+                className="
+                  mt-4 rounded-full
+                  bg-gradient-to-r
+                  from-blue-600
+                  via-cyan-500
+                  to-blue-500
+                  py-3
+                  font-semibold text-white
+                  transition-transform duration-200
+                  hover:scale-[1.02]
+                "
               >
-                📅Shedule a metting 
+                📅 Schedule a Meeting
               </button>
-
-              <div className="flex justify-center mt-5 sm:hidden">
-                <div
-                  className={`p-2 rounded-full ${
-                    dark
-                      ? "bg-slate-800 border border-slate-700"
-                      : "bg-slate-100 border border-slate-200"
-                  }`}
-                >
-                  <DarkModeSwitch
-                    checked={dark}
-                    onChange={setDark}
-                    size={20}
-                  />
-                </div>
-              </div>
             </nav>
-          </div>
+          </motion.div>
         )}
+
+        {/* =========================================
+            MEETING MODAL
+        ========================================= */}
 
         <BookMeetingModal
           isOpen={meetingOpen}

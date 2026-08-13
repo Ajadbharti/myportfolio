@@ -4,25 +4,31 @@ import { useTheme } from "../../context/ThemeContext";
 
 const education = [
   {
-    degree: "Bachelor of Technology (B.Tech)",
+    degree: "B.Tech in Computer Science & Engineering",
     college: "Lovely Professional University",
     duration: "2024 - 2028",
+    status: "current",
+    link: null,
     description:
-      "Currently pursuing B.Tech in Computer Science and Engineering. Learning Data Structures, DBMS, Operating Systems, React, Node.js, Express.js and MongoDB.",
+      "Currently pursuing an undergraduate program in computer science with a focus on software development and system design.",
   },
   {
-    degree: "Intermediate (12th)",
-    college: "Your School Name",
-    duration: "2022 - 2024",
+    degree: "Higher Secondary Education, Science (PCM)",
+    college: "J.S College",
+    duration: "May 2021 - Jun 2023",
+    status: null,
+    link: "https://jansahkaricollege.com/",
     description:
-      "Completed Higher Secondary Education with Science stream.",
+      "Completed higher secondary education with a focus on Physics, Chemistry, and Mathematics.",
   },
   {
-    degree: "High School (10th)",
-    college: "Your School Name",
-    duration: "2021 - 2022",
+    degree: "Secondary Education",
+    college: "MDJ Public School",
+    duration: "March 2020 - April 2021",
+    status: null,
+    link: null,
     description:
-      "Completed Secondary Education.",
+      "Completed secondary education with involvement in various activities.",
   },
 ];
 
@@ -39,7 +45,6 @@ function Education() {
       }`}
     >
       <div className="max-w-6xl mx-auto px-6">
-
         {/* Heading */}
         <div className="text-center mb-16">
           <p className="text-blue-600 uppercase font-semibold tracking-widest">
@@ -59,15 +64,27 @@ function Education() {
           </p>
         </div>
 
-        {/* Timeline */}
+        {/* Education Cards */}
         <div className="space-y-8">
           {education.map((item, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.2 }}
+              initial={{
+                opacity: 0,
+                y: 40,
+              }}
+              whileInView={{
+                opacity: 1,
+                y: 0,
+              }}
+              viewport={{
+                once: true,
+                amount: 0.2,
+              }}
+              transition={{
+                delay: index * 0.2,
+                duration: 0.5,
+              }}
               className={`rounded-2xl p-8 border shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl ${
                 dark
                   ? "bg-slate-900 border-slate-800 hover:border-blue-500"
@@ -75,19 +92,43 @@ function Education() {
               }`}
             >
               <div className="flex items-start gap-5">
+                {/* Icon */}
                 <div className="w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
                   <FaGraduationCap className="text-white text-2xl" />
                 </div>
 
-                <div>
-                  <h3 className="text-2xl font-bold">
-                    {item.degree}
-                  </h3>
+                {/* Content */}
+                <div className="flex-1">
+                  {/* Degree + Current Status */}
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <h3 className="text-2xl font-bold">
+                      {item.degree}
+                    </h3>
 
-                  <p className="text-blue-500 font-medium mt-2">
-                    {item.college}
-                  </p>
+                    {item.status === "current" && (
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-500 border border-emerald-500/30">
+                        Current
+                      </span>
+                    )}
+                  </div>
 
+                  {/* College */}
+                  {item.link ? (
+                    <a
+                      href={item.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 font-medium mt-2 inline-block hover:underline"
+                    >
+                      {item.college}
+                    </a>
+                  ) : (
+                    <p className="text-blue-500 font-medium mt-2">
+                      {item.college}
+                    </p>
+                  )}
+
+                  {/* Duration */}
                   <p
                     className={`mt-1 ${
                       dark ? "text-gray-400" : "text-slate-500"
@@ -96,6 +137,7 @@ function Education() {
                     {item.duration}
                   </p>
 
+                  {/* Description */}
                   <p
                     className={`mt-5 leading-8 ${
                       dark ? "text-gray-400" : "text-slate-600"
@@ -108,7 +150,6 @@ function Education() {
             </motion.div>
           ))}
         </div>
-
       </div>
     </section>
   );
