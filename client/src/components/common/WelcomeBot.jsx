@@ -183,14 +183,9 @@ function WelcomeBot() {
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
 
-  const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({
-      behavior: "smooth",
-    });
-  }, [messages, typing]);
+  // Keep scrolling inside the chat panel only; do not force the page to scroll.
 
   useEffect(() => {
     if (open) {
@@ -243,7 +238,7 @@ function WelcomeBot() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[60] flex flex-col items-end">
+    <div className="fixed bottom-4 right-4 z-[60] flex flex-col items-end sm:bottom-6 sm:right-6">
       <AnimatePresence>
         {open && (
           <motion.div
@@ -266,7 +261,7 @@ function WelcomeBot() {
               duration: 0.28,
               ease: "easeOut",
             }}
-            className={`mb-4 flex h-[600px] w-[380px] max-w-[calc(100vw-32px)] flex-col overflow-hidden rounded-[28px] border shadow-2xl backdrop-blur-xl ${
+            className={`mb-4 flex h-[620px] w-[390px] max-w-[calc(100vw-24px)] flex-col overflow-hidden rounded-[30px] border shadow-[0_25px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl ${
               dark
                 ? "border-white/10 bg-[#090b12]/95 text-white"
                 : "border-slate-200 bg-white/95 text-slate-900"
@@ -274,7 +269,7 @@ function WelcomeBot() {
           >
             {/* HEADER */}
             <div
-              className={`relative flex shrink-0 items-center justify-between border-b px-5 py-4 ${
+              className={`relative flex shrink-0 items-center justify-between border-b bg-gradient-to-r from-violet-500/[0.06] via-transparent to-cyan-500/[0.06] px-5 py-4 ${
                 dark
                   ? "border-white/10"
                   : "border-slate-200"
@@ -333,7 +328,7 @@ function WelcomeBot() {
 
             {/* CHAT AREA */}
             <div
-              className={`min-h-0 flex-1 overflow-y-auto px-4 py-5 scrollbar-thin ${
+              className={`min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 scrollbar-thin ${
                 dark
                   ? "scrollbar-thumb-slate-700"
                   : "scrollbar-thumb-slate-300"
@@ -445,7 +440,7 @@ function WelcomeBot() {
                   </motion.div>
                 )}
 
-                <div ref={messagesEndRef} />
+                <div />
               </div>
             </div>
 
@@ -481,7 +476,7 @@ function WelcomeBot() {
                       type="button"
                       disabled={typing}
                       onClick={() => handleQuickAction(action)}
-                      className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-xs font-semibold transition-all duration-200 hover:-translate-y-0.5 ${
+                      className={`flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-xs font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg ${
                         dark
                           ? "border-violet-500/20 bg-violet-500/5 text-slate-300 hover:border-violet-500/40 hover:bg-violet-500/10"
                           : "border-violet-200 bg-violet-50/60 text-violet-700 hover:border-violet-300 hover:bg-violet-50"
@@ -496,8 +491,8 @@ function WelcomeBot() {
             </div>
 
             {/* SUGGESTIONS */}
-            <div className="shrink-0 overflow-x-auto px-4 py-3">
-              <div className="flex gap-2">
+            <div className="shrink-0 px-4 py-3">
+              <div className="flex flex-wrap gap-2">
                 {suggestions.map((suggestion) => (
                   <button
                     key={suggestion}
@@ -519,7 +514,7 @@ function WelcomeBot() {
             {/* INPUT */}
             <div className="shrink-0 px-4 pb-3">
               <div
-                className={`flex items-center gap-2 rounded-2xl border p-1.5 transition-all focus-within:ring-2 focus-within:ring-violet-500/20 ${
+                className={`flex items-center gap-2 rounded-2xl border p-1.5 shadow-inner transition-all focus-within:ring-2 focus-within:ring-violet-500/20 ${
                   dark
                     ? "border-white/10 bg-white/[0.04] focus-within:border-violet-500/50"
                     : "border-slate-200 bg-slate-50 focus-within:border-violet-400"
@@ -595,7 +590,7 @@ function WelcomeBot() {
                 ease: "easeInOut",
               },
             }}
-            className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-violet-600 text-white shadow-[0_10px_35px_rgba(6,182,212,0.4)]"
+            className="relative flex h-14 w-14 items-center justify-center rounded-full border border-white/15 bg-gradient-to-br from-cyan-500 via-blue-600 to-violet-600 text-white shadow-[0_12px_40px_rgba(99,102,241,0.45)]"
           >
             <HiOutlineChatBubbleLeftRight size={25} />
 

@@ -9,6 +9,8 @@ import {
 } from "react-icons/fa";
 import { useTheme } from "../../context/ThemeContext";
 
+import profileImage from "/images/profile.png";
+
 function About() {
   const { dark } = useTheme();
 
@@ -27,13 +29,10 @@ function About() {
 
       {dark && (
         <>
-          {/* Purple Glow */}
           <div className="pointer-events-none absolute -left-40 top-20 h-96 w-96 rounded-full bg-violet-700/10 blur-[130px]" />
 
-          {/* Blue Glow */}
           <div className="pointer-events-none absolute -right-40 bottom-10 h-96 w-96 rounded-full bg-cyan-500/10 blur-[130px]" />
 
-          {/* Small Dots */}
           <div className="pointer-events-none absolute left-[10%] top-[20%] h-1.5 w-1.5 rounded-full bg-violet-400/70" />
 
           <div className="pointer-events-none absolute right-[15%] top-[35%] h-2 w-2 rounded-full bg-cyan-400/60" />
@@ -85,8 +84,11 @@ function About() {
                   {/* Top Gradient */}
                   <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-r from-violet-600/20 via-cyan-500/10 to-fuchsia-500/20 blur-2xl" />
 
-                  {/* Developer Badge */}
-                  <div className="absolute left-5 top-5 z-10">
+                  {/* ========================================
+                      AVAILABILITY BADGE
+                  ======================================== */}
+
+                  <div className="absolute left-5 top-5 z-30">
                     <span
                       className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold backdrop-blur-md ${
                         dark
@@ -99,30 +101,169 @@ function About() {
                     </span>
                   </div>
 
-                  {/* Profile Visual */}
+                  {/* ========================================
+                      PROFILE IMAGE
+                  ======================================== */}
+
                   <div className="flex h-[350px] items-center justify-center pt-8">
+                    <div className="relative">
 
-                    {/* Gradient Circle */}
-                    <div className="relative flex h-56 w-56 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 via-cyan-400 to-fuchsia-500 p-[2px] shadow-2xl shadow-violet-500/20">
-
+                      {/* Image Glow */}
                       <div
-                        className={`flex h-full w-full items-center justify-center rounded-full text-8xl ${
-                          dark
-                            ? "bg-[#080910]"
-                            : "bg-white"
-                        }`}
+                        className="
+                          pointer-events-none
+                          absolute
+                          -inset-5
+                          rounded-full
+                          bg-gradient-to-r
+                          from-violet-600/20
+                          via-blue-500/15
+                          to-cyan-400/20
+                          blur-2xl
+                        "
+                      />
+
+                      {/* Gradient Ring */}
+                      <div
+                        className="
+                          relative
+                          h-[280px]
+                          w-[280px]
+                          rounded-full
+                          bg-gradient-to-br
+                          from-violet-500
+                          via-blue-500
+                          to-cyan-400
+                          p-[2px]
+                          shadow-[0_20px_60px_rgba(99,102,241,0.25)]
+                        "
                       >
-                        👨‍💻
+
+                        {/* Image Container */}
+                        <div
+                          className={`relative h-full w-full overflow-hidden rounded-full ${
+                            dark
+                              ? "bg-[#080910]"
+                              : "bg-[#EEF1F8]"
+                          }`}
+                        >
+
+                          {/* Inner Glow */}
+                          <div
+                            className="
+                              pointer-events-none
+                              absolute
+                              left-1/2
+                              top-8
+                              z-0
+                              h-40
+                              w-40
+                              -translate-x-1/2
+                              rounded-full
+                              bg-violet-500/10
+                              blur-3xl
+                            "
+                          />
+
+                          {/* Profile Image */}
+                          <img
+                            src={profileImage}
+                            alt="Ajad Bharti"
+                            className="
+                              absolute
+                              bottom-0
+                              left-1/2
+                              z-10
+                              h-[260px]
+                              w-auto
+                              max-w-none
+                              -translate-x-1/2
+                              object-contain
+                              object-bottom
+                              transition-transform
+                              duration-500
+                              ease-out
+                              hover:scale-[1.03]
+                            "
+                          />
+
+                          {/* Bottom Fade */}
+                          <div
+                            className="
+                              pointer-events-none
+                              absolute
+                              inset-x-0
+                              bottom-0
+                              z-20
+                              h-20
+                              bg-gradient-to-t
+                              from-black/20
+                              to-transparent
+                            "
+                          />
+                        </div>
                       </div>
 
-                      {/* Floating Dot */}
-                      <div className="absolute -right-2 top-10 h-5 w-5 rounded-full border-4 border-[#080910] bg-cyan-400" />
+                      {/* Cyan Floating Dot */}
+                      <motion.div
+                        animate={{ y: [0, -7, 0] }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                        className={`
+                          absolute
+                          -right-3
+                          top-12
+                          z-30
+                          h-5
+                          w-5
+                          rounded-full
+                          border-4
+                          ${
+                            dark
+                              ? "border-[#080910]"
+                              : "border-white"
+                          }
+                          bg-cyan-400
+                          shadow-[0_0_18px_rgba(34,211,238,0.7)]
+                        `}
+                      />
 
-                      <div className="absolute -bottom-1 left-8 h-4 w-4 rounded-full border-2 border-[#080910] bg-violet-400" />
+                      {/* Violet Floating Dot */}
+                      <motion.div
+                        animate={{ y: [0, 7, 0] }}
+                        transition={{
+                          duration: 3.5,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                        className={`
+                          absolute
+                          -bottom-1
+                          left-8
+                          z-30
+                          h-4
+                          w-4
+                          rounded-full
+                          border-2
+                          ${
+                            dark
+                              ? "border-[#080910]"
+                              : "border-white"
+                          }
+                          bg-violet-400
+                          shadow-[0_0_18px_rgba(167,139,250,0.7)]
+                        `}
+                      />
                     </div>
                   </div>
 
-                  {/* Profile Info */}
+                  {/* ========================================
+                      PROFILE INFO
+                  ======================================== */}
+
                   <div className="px-6 pb-7 text-center">
 
                     <h3
@@ -154,6 +295,7 @@ function About() {
                         <p className="text-lg font-bold text-violet-500">
                           20+
                         </p>
+
                         <p
                           className={`text-[11px] ${
                             dark
@@ -175,6 +317,7 @@ function About() {
                         <p className="text-lg font-bold text-cyan-500">
                           100%
                         </p>
+
                         <p
                           className={`text-[11px] ${
                             dark
@@ -190,6 +333,7 @@ function About() {
                         <p className="text-lg font-bold text-fuchsia-500">
                           24/7
                         </p>
+
                         <p
                           className={`text-[11px] ${
                             dark
@@ -206,7 +350,10 @@ function About() {
                 </div>
               </div>
 
-              {/* Floating Tech Badge */}
+              {/* ========================================
+                  FLOATING TECH BADGE
+              ======================================== */}
+
               <motion.div
                 animate={{ y: [0, -8, 0] }}
                 transition={{
@@ -221,6 +368,7 @@ function About() {
                 }`}
               >
                 <div className="flex items-center gap-3">
+
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-500/10 text-lg">
                     ⚡
                   </div>
@@ -240,6 +388,7 @@ function About() {
                       Full Stack
                     </p>
                   </div>
+
                 </div>
               </motion.div>
             </div>
@@ -280,6 +429,7 @@ function About() {
               }`}
             >
               Turning Ideas Into{" "}
+
               <span className="bg-gradient-to-r from-violet-400 via-cyan-400 to-fuchsia-400 bg-clip-text text-transparent">
                 Digital Experiences
               </span>
@@ -294,6 +444,7 @@ function About() {
               }`}
             >
               I'm{" "}
+
               <span
                 className={`font-semibold ${
                   dark
@@ -303,12 +454,14 @@ function About() {
               >
                 Ajad Bharti
               </span>
+
               , a B.Tech Computer Science student and
               passionate Full Stack MERN Developer who
               enjoys building modern, responsive, and
               scalable web applications.
             </p>
 
+            {/* Second Description */}
             <p
               className={`mt-4 max-w-2xl text-base leading-8 ${
                 dark
@@ -340,13 +493,7 @@ function About() {
               >
                 <FaGraduationCap className="mb-3 text-xl text-violet-500 transition-transform duration-300 group-hover:scale-110" />
 
-                <p
-                  className={`text-xs ${
-                    dark
-                      ? "text-slate-500"
-                      : "text-slate-500"
-                  }`}
-                >
+                <p className="text-xs text-slate-500">
                   Education
                 </p>
 
@@ -365,13 +512,7 @@ function About() {
               >
                 <FaCode className="mb-3 text-xl text-cyan-500 transition-transform duration-300 group-hover:scale-110" />
 
-                <p
-                  className={`text-xs ${
-                    dark
-                      ? "text-slate-500"
-                      : "text-slate-500"
-                  }`}
-                >
+                <p className="text-xs text-slate-500">
                   Specialization
                 </p>
 
@@ -390,13 +531,7 @@ function About() {
               >
                 <FaMapMarkerAlt className="mb-3 text-xl text-fuchsia-500 transition-transform duration-300 group-hover:scale-110" />
 
-                <p
-                  className={`text-xs ${
-                    dark
-                      ? "text-slate-500"
-                      : "text-slate-500"
-                  }`}
-                >
+                <p className="text-xs text-slate-500">
                   Location
                 </p>
 
@@ -464,11 +599,31 @@ function About() {
 
             <div className="mt-9 flex flex-wrap gap-4">
 
-              {/* Resume */}
+              {/* Download CV */}
               <a
-                href="/resume.pdf"
-                download
-                className="group inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-violet-600/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-violet-600/30"
+                href="/cv/Ajad-Bharti-CV.pdf"
+                download="Ajad-Bharti-CV.pdf"
+                className="
+                  group
+                  inline-flex
+                  items-center
+                  gap-3
+                  rounded-xl
+                  bg-gradient-to-r
+                  from-violet-600
+                  to-fuchsia-600
+                  px-6
+                  py-3.5
+                  text-sm
+                  font-semibold
+                  text-white
+                  shadow-lg
+                  shadow-violet-600/20
+                  transition-all
+                  duration-300
+                  hover:-translate-y-1
+                  hover:shadow-violet-600/30
+                "
               >
                 <FaDownload
                   size={14}

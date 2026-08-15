@@ -1,11 +1,14 @@
 function HeroBackground() {
   return (
     <>
-      <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl"></div>
+      {/* Royal Blue Glow */}
+      <div className="pointer-events-none absolute left-[-180px] top-[10%] h-[500px] w-[500px] rounded-full bg-blue-600/[0.08] blur-[150px]" />
 
-      <div className="absolute bottom-10 right-10 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"></div>
+      {/* Royal Violet Glow */}
+      <div className="pointer-events-none absolute right-[-150px] top-[15%] h-[550px] w-[550px] rounded-full bg-violet-600/[0.08] blur-[160px]" />
 
-      <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+      {/* Soft Cyan Accent */}
+      <div className="pointer-events-none absolute bottom-[-180px] left-[35%] h-[450px] w-[450px] rounded-full bg-cyan-500/[0.05] blur-[150px]" />
     </>
   );
 }
