@@ -1,14 +1,30 @@
 import { motion } from "framer-motion";
 import { FaCode, FaGithub } from "react-icons/fa";
-import { SiLeetcode, SiGeeksforgeeks } from "react-icons/si";
+import {
+  SiLeetcode,
+  SiGeeksforgeeks,
+} from "react-icons/si";
 import { useEffect, useMemo, useState } from "react";
 import { useTheme } from "../../context/ThemeContext";
 
 const API_URL = "http://localhost:5000/api/stats";
 
-const years = [2026, 2025, 2024];
+// Prevent React StrictMode / remounts from repeatedly hitting
+// LeetCode and GFG APIs during the same browser session.
+const statsCache = {
+  leetcode: null,
+  gfg: null,
+};
 
-const months = [
+const statsPromises = {
+  leetcode: null,
+  gfg: null,
+};
+
+
+const YEARS = [2026, 2025, 2024];
+
+const MONTHS = [
   "Jan",
   "Feb",
   "Mar",
@@ -37,61 +53,145 @@ function Stats() {
   const [error, setError] = useState("");
 
   // ==========================================
-  // Fetch data
+  // Fetch Stats
   // ==========================================
   useEffect(() => {
+    let cancelled = false;
+
+    const setSafeLoading = (value) => {
+      if (!cancelled) {
+        setLoading(value);
+      }
+    };
+
+    const fetchJson = async (url) => {
+      const response = await fetch(url);
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(
+          result.message || "Unable to fetch stats"
+        );
+      }
+
+      return result;
+    };
+
     const fetchStats = async () => {
-      setLoading(true);
-      setError("");
-
       try {
-        let url = "";
+        setError("");
 
-        if (platform === "github") {
-          url = `${API_URL}/github?year=${selectedYear}`;
-        }
-
+        // ------------------------------------------
+        // LeetCode: one request per browser session
+        // ------------------------------------------
         if (platform === "leetcode") {
-          url = `${API_URL}/leetcode`;
+          if (leetcodeData) {
+            return;
+          }
+
+          if (statsCache.leetcode) {
+            setLeetcodeData(statsCache.leetcode);
+            return;
+          }
+
+          setSafeLoading(true);
+
+          if (!statsPromises.leetcode) {
+            statsPromises.leetcode = fetchJson(
+              `${API_URL}/leetcode`
+            )
+              .then((result) => {
+                statsCache.leetcode = result;
+                return result;
+              })
+              .finally(() => {
+                statsPromises.leetcode = null;
+              });
+          }
+
+          const result =
+            await statsPromises.leetcode;
+
+          if (!cancelled) {
+            setLeetcodeData(result);
+          }
+
+          return;
         }
 
+        // ------------------------------------------
+        // GFG: one request per browser session
+        // ------------------------------------------
         if (platform === "gfg") {
-          url = `${API_URL}/gfg`;
+          if (gfgData) {
+            return;
+          }
+
+          if (statsCache.gfg) {
+            setGfgData(statsCache.gfg);
+            return;
+          }
+
+          setSafeLoading(true);
+
+          if (!statsPromises.gfg) {
+            statsPromises.gfg = fetchJson(
+              `${API_URL}/gfg`
+            )
+              .then((result) => {
+                statsCache.gfg = result;
+                return result;
+              })
+              .finally(() => {
+                statsPromises.gfg = null;
+              });
+          }
+
+          const result =
+            await statsPromises.gfg;
+
+          if (!cancelled) {
+            setGfgData(result);
+          }
+
+          return;
         }
 
-        const response = await fetch(url);
-        const result = await response.json();
+        // ------------------------------------------
+        // GitHub: year-specific request
+        // ------------------------------------------
+        setSafeLoading(true);
 
-        if (!response.ok || !result.success) {
-          throw new Error(
-            result.message || "Unable to fetch stats"
-          );
-        }
+        const result = await fetchJson(
+          `${API_URL}/github?year=${selectedYear}`
+        );
 
-        if (platform === "github") {
+        if (!cancelled) {
           setGithubData(result);
         }
-
-        if (platform === "leetcode") {
-          setLeetcodeData(result);
-        }
-
-        if (platform === "gfg") {
-          setGfgData(result);
-        }
       } catch (err) {
-        console.error(err);
-        setError(err.message);
+        console.error(
+          "Stats fetch error:",
+          err
+        );
+
+        if (!cancelled) {
+          setError(err.message);
+        }
       } finally {
-        setLoading(false);
+        setSafeLoading(false);
       }
     };
 
     fetchStats();
+
+    return () => {
+      cancelled = true;
+    };
   }, [platform, selectedYear]);
 
   // ==========================================
-  // GitHub real contributions
+  // GitHub Data
   // ==========================================
   const githubContributions =
     githubData?.data?.contributions || [];
@@ -99,19 +199,19 @@ function Stats() {
   const githubTotal =
     githubData?.data?.total?.[selectedYear] || 0;
 
-  const activeDays = useMemo(() => {
+  const githubActiveDays = useMemo(() => {
     return githubContributions.filter(
-      (item) => item.count > 0
+      (item) => Number(item.count) > 0
     ).length;
   }, [githubContributions]);
 
-  const streak = useMemo(() => {
+  const githubBestStreak = useMemo(() => {
     let current = 0;
     let best = 0;
 
     githubContributions.forEach((item) => {
-      if (item.count > 0) {
-        current++;
+      if (Number(item.count) > 0) {
+        current += 1;
         best = Math.max(best, current);
       } else {
         current = 0;
@@ -122,103 +222,253 @@ function Stats() {
   }, [githubContributions]);
 
   // ==========================================
-  // Create graph weeks
+  // LeetCode Data
   // ==========================================
-  const weeks = useMemo(() => {
-    if (!githubContributions.length) {
+  const leetcode = useMemo(() => {
+    if (!leetcodeData) return null;
+
+    const solved = leetcodeData.solved || {};
+    const profile = leetcodeData.profile || {};
+    const calendar = leetcodeData.calendar || {};
+
+    return {
+      total: solved.solvedProblem ?? 0,
+      easy: solved.easySolved ?? 0,
+      medium: solved.mediumSolved ?? 0,
+      hard: solved.hardSolved ?? 0,
+      ranking: profile.ranking ?? 0,
+      activeDays: calendar.totalActiveDays ?? 0,
+      streak: calendar.streak ?? 0,
+      submissionCalendar:
+        calendar.submissionCalendar || "{}",
+    };
+  }, [leetcodeData]);
+
+  // ==========================================
+  // LeetCode Calendar
+  // ==========================================
+  const leetcodeContributions = useMemo(() => {
+    if (!leetcode?.submissionCalendar) {
       return [];
     }
 
-    const firstDate = new Date(
-      `${selectedYear}-01-01T00:00:00`
-    );
+    try {
+      const calendar = JSON.parse(
+        leetcode.submissionCalendar
+      );
 
-    const firstDay = firstDate.getDay();
+      return Object.entries(calendar).map(
+        ([timestamp, count]) => {
+          const date = new Date(
+            Number(timestamp) * 1000
+          );
 
-    const result = [];
-    let week = [];
+          const dateString =
+            formatLocalDate(date);
 
-    // Empty cells before Jan 1
-    for (let i = 0; i < firstDay; i++) {
-      week.push(null);
+          const numericCount =
+            Number(count) || 0;
+
+          return {
+            date: dateString,
+            count: numericCount,
+            level: getLeetCodeLevel(
+              numericCount
+            ),
+          };
+        }
+      );
+    } catch (err) {
+      console.error(
+        "LeetCode calendar parse error:",
+        err
+      );
+
+      return [];
     }
+  }, [leetcode]);
 
-    githubContributions.forEach((item) => {
-      week.push(item);
-
-      if (week.length === 7) {
-        result.push(week);
-        week = [];
-      }
-    });
-
-    if (week.length > 0) {
-      while (week.length < 7) {
-        week.push(null);
-      }
-
-      result.push(week);
-    }
-
-    return result;
-  }, [githubContributions, selectedYear]);
+  const leetcodeYearTotal = useMemo(() => {
+    return leetcodeContributions
+      .filter((item) =>
+        item.date.startsWith(
+          String(selectedYear)
+        )
+      )
+      .reduce(
+        (sum, item) => sum + item.count,
+        0
+      );
+  }, [
+    leetcodeContributions,
+    selectedYear,
+  ]);
 
   // ==========================================
-  // Month positions
+  // GFG Data
   // ==========================================
-  const monthPositions = useMemo(() => {
-    const firstDate = new Date(
-      `${selectedYear}-01-01T00:00:00`
+  const gfg = useMemo(() => {
+    if (!gfgData) return null;
+
+    return {
+      summary: gfgData.summary || {},
+      heatmap: gfgData.heatmap || {},
+    };
+  }, [gfgData]);
+
+  const gfgContributions = useMemo(() => {
+    return gfg?.heatmap?.dailyContributions || [];
+  }, [gfg]);
+
+  const gfgYearTotal = useMemo(() => {
+    const yearly =
+      gfg?.heatmap?.yearlyContributions || [];
+
+    const currentYear = yearly.find(
+      (item) =>
+        Number(item.year) ===
+        Number(selectedYear)
     );
 
-    const firstDay = firstDate.getDay();
+    return currentYear?.totalSubmissions || 0;
+  }, [gfg, selectedYear]);
 
-    return months.map((month, index) => {
-      const date = new Date(
-        selectedYear,
-        index,
-        1
-      );
+  const gfgYearActiveDays = useMemo(() => {
+    const yearly =
+      gfg?.heatmap?.yearlyContributions || [];
 
-      const dayDifference = Math.floor(
-        (date - firstDate) /
-          (1000 * 60 * 60 * 24)
-      );
+    const currentYear = yearly.find(
+      (item) =>
+        Number(item.year) ===
+        Number(selectedYear)
+    );
 
-      const week = Math.floor(
-        (dayDifference + firstDay) / 7
-      );
+    return currentYear?.activeDays || 0;
+  }, [gfg, selectedYear]);
 
+  // ==========================================
+  // Current Graph Data
+  // ==========================================
+  const currentContributions = useMemo(() => {
+    if (platform === "github") {
+      return githubContributions;
+    }
+
+    if (platform === "leetcode") {
+      return leetcodeContributions;
+    }
+
+    return gfgContributions;
+  }, [
+    platform,
+    githubContributions,
+    leetcodeContributions,
+    gfgContributions,
+  ]);
+
+  const currentTotal = useMemo(() => {
+    if (platform === "github") {
+      return githubTotal;
+    }
+
+    if (platform === "leetcode") {
+      return leetcodeYearTotal;
+    }
+
+    return gfgYearTotal;
+  }, [
+    platform,
+    githubTotal,
+    leetcodeYearTotal,
+    gfgYearTotal,
+  ]);
+
+  // ==========================================
+  // Current Graph
+  // ==========================================
+  const graphWeeks = useMemo(() => {
+    return createYearWeeks(
+      selectedYear,
+      currentContributions
+    );
+  }, [
+    selectedYear,
+    currentContributions,
+  ]);
+
+  // ==========================================
+  // Current Platform Stats
+  // ==========================================
+  const platformStats = useMemo(() => {
+    if (platform === "github") {
       return {
-        month,
-        week,
+        first: {
+          icon: "🔥",
+          value: githubBestStreak,
+          label: "best streak",
+        },
+        second: {
+          icon: "🏅",
+          value: githubTotal,
+          label: "contributions",
+        },
+        third: {
+          icon: "✓",
+          value: githubActiveDays,
+          label: "active days",
+        },
       };
-    });
-  }, [selectedYear]);
+    }
 
-  // ==========================================
-  // LeetCode
-  // ==========================================
-const leetcode = useMemo(() => {
-  if (!leetcodeData) return null;
+    if (platform === "leetcode") {
+      return {
+        first: {
+          icon: "🔥",
+          value: leetcode?.streak ?? 0,
+          label: "day streak",
+        },
+        second: {
+          icon: "🏅",
+          value: Number(
+            leetcode?.ranking || 0
+          ).toLocaleString(),
+          label: "global rank",
+        },
+        third: {
+          icon: "✓",
+          value: leetcode?.total ?? 0,
+          label: "questions solved",
+        },
+      };
+    }
 
-  const solved = leetcodeData.solved || {};
-  const profile = leetcodeData.profile || {};
-  const calendar = leetcodeData.calendar || {};
+    return {
+      first: {
+        icon: "🔥",
+        value: gfg?.heatmap?.currentStreak ?? 0,
+        label: "day streak",
+      },
+      second: {
+        icon: "🏅",
+        value: gfg?.heatmap?.longestStreak ?? 0,
+        label: "longest streak",
+      },
+      third: {
+        icon: "✓",
+        value: gfgYearActiveDays,
+        label: "active days",
+      },
+    };
+  }, [
+    platform,
+    githubBestStreak,
+    githubTotal,
+    githubActiveDays,
+    leetcode,
+    gfg,
+    gfgYearActiveDays,
+  ]);
 
-  return {
-    total: solved.solvedProblem ?? 0,
-    easy: solved.easySolved ?? 0,
-    medium: solved.mediumSolved ?? 0,
-    hard: solved.hardSolved ?? 0,
-
-    ranking: profile.ranking ?? "—",
-
-    activeDays: calendar.totalActiveDays ?? 0,
-
-    streak: calendar.streak ?? 0,
-  };
-}, [leetcodeData]);
   return (
     <section
       className={`py-16 transition-colors duration-300 ${
@@ -229,7 +479,9 @@ const leetcode = useMemo(() => {
     >
       <div className="max-w-7xl mx-auto px-6">
 
-        {/* Heading */}
+        {/* ========================================
+            Heading
+        ======================================== */}
         <motion.div
           initial={{
             opacity: 0,
@@ -258,67 +510,56 @@ const leetcode = useMemo(() => {
                 : "text-slate-900"
             }`}
           >
-            Coding Activity
+            Contribution Graph
           </h2>
         </motion.div>
 
-        {/* Platform Tabs */}
+        {/* ========================================
+            Platform Tabs
+        ======================================== */}
         <div className="flex flex-wrap gap-3 mb-8">
 
-          <button
+          <PlatformButton
+            active={platform === "github"}
             onClick={() =>
               setPlatform("github")
             }
-            className={`flex items-center gap-3 px-6 py-3 rounded-full border transition-all ${
-              platform === "github"
-                ? "border-cyan-400 text-cyan-400 bg-cyan-400/10"
-                : dark
-                ? "border-slate-700 text-slate-400"
-                : "border-slate-300 text-slate-500"
-            }`}
-          >
-            <FaGithub />
-            GitHub
-          </button>
+            icon={<FaGithub />}
+            label="GitHub"
+            color="cyan"
+            dark={dark}
+          />
 
-          <button
+          <PlatformButton
+            active={platform === "leetcode"}
             onClick={() =>
               setPlatform("leetcode")
             }
-            className={`flex items-center gap-3 px-6 py-3 rounded-full border transition-all ${
-              platform === "leetcode"
-                ? "border-orange-400 text-orange-400 bg-orange-400/10"
-                : dark
-                ? "border-slate-700 text-slate-400"
-                : "border-slate-300 text-slate-500"
-            }`}
-          >
-            <SiLeetcode />
-            LeetCode
-          </button>
+            icon={<SiLeetcode />}
+            label="LeetCode"
+            color="orange"
+            dark={dark}
+          />
 
-          <button
+          <PlatformButton
+            active={platform === "gfg"}
             onClick={() =>
               setPlatform("gfg")
             }
-            className={`flex items-center gap-3 px-6 py-3 rounded-full border transition-all ${
-              platform === "gfg"
-                ? "border-green-400 text-green-400 bg-green-400/10"
-                : dark
-                ? "border-slate-700 text-slate-400"
-                : "border-slate-300 text-slate-500"
-            }`}
-          >
-            <SiGeeksforgeeks />
-            GFG
-          </button>
+            icon={<SiGeeksforgeeks />}
+            label="GFG"
+            color="green"
+            dark={dark}
+          />
 
         </div>
 
-        {/* Loading */}
+        {/* ========================================
+            Loading
+        ======================================== */}
         {loading && (
           <div
-            className={`rounded-2xl border p-12 text-center ${
+            className={`rounded-2xl border p-16 text-center ${
               dark
                 ? "bg-[#0d0d0d] border-slate-800"
                 : "bg-white border-slate-200"
@@ -332,10 +573,12 @@ const leetcode = useMemo(() => {
           </div>
         )}
 
-        {/* Error */}
+        {/* ========================================
+            Error
+        ======================================== */}
         {!loading && error && (
           <div
-            className={`rounded-2xl border p-10 text-center ${
+            className={`rounded-2xl border p-12 text-center ${
               dark
                 ? "bg-[#0d0d0d] border-red-900"
                 : "bg-white border-red-200"
@@ -361,354 +604,206 @@ const leetcode = useMemo(() => {
           </div>
         )}
 
-        {/* =====================================
-            GITHUB
-        ===================================== */}
+        {/* ========================================
+            Graph + Year Selector
+        ======================================== */}
         {!loading &&
-          !error &&
-          platform === "github" && (
-            <>
+          !error && (
+            <div className="flex flex-col lg:flex-row gap-5">
+
+              {/* Graph */}
               <motion.div
                 initial={{
                   opacity: 0,
                   y: 30,
                 }}
-                whileInView={{
+                animate={{
                   opacity: 1,
                   y: 0,
                 }}
-                viewport={{
-                  once: true,
+                transition={{
+                  duration: 0.5,
                 }}
-                className={`rounded-2xl border p-6 md:p-8 overflow-hidden ${
+                className={`flex-1 min-w-0 rounded-2xl border p-6 md:p-8 overflow-hidden ${
                   dark
                     ? "bg-[#0d0d0d] border-slate-800"
                     : "bg-white border-slate-200"
                 }`}
               >
-
-                {/* Years */}
-                <div className="flex justify-end gap-2 mb-7">
-
-                  {years.map((year) => (
-                    <button
-                      key={year}
-                      onClick={() =>
-                        setSelectedYear(year)
-                      }
-                      className={`px-5 py-2.5 rounded-xl border ${
-                        selectedYear === year
-                          ? "border-cyan-400 text-cyan-400 bg-cyan-400/10"
-                          : dark
-                          ? "border-slate-700 text-slate-400"
-                          : "border-slate-300 text-slate-500"
-                      }`}
-                    >
-                      {year}
-                    </button>
-                  ))}
-
-                </div>
-
-                {/* Month Labels */}
-                <div className="relative ml-9 h-7 min-w-[850px]">
-
-                  {monthPositions.map(
-                    ({ month, week }) => (
-                      <span
-                        key={month}
-                        className="absolute text-xs text-gray-500"
-                        style={{
-                          left: `${week * 17}px`,
-                        }}
-                      >
-                        {month}
-                      </span>
-                    )
-                  )}
-
-                </div>
-
-                {/* Graph */}
-                <div className="flex gap-2 overflow-x-auto pb-4">
-
-                  <div className="flex flex-col gap-[5px] w-7 shrink-0">
-
-                    <div className="h-3" />
-
-                    <span className="h-3 text-[9px] text-gray-500">
-                      Mon
-                    </span>
-
-                    <div className="h-3" />
-
-                    <span className="h-3 text-[9px] text-gray-500">
-                      Wed
-                    </span>
-
-                    <div className="h-3" />
-
-                    <span className="h-3 text-[9px] text-gray-500">
-                      Fri
-                    </span>
-
-                    <div className="h-3" />
-
-                  </div>
-
-                  <div className="flex gap-[5px] min-w-max">
-
-                    {weeks.map(
-                      (week, weekIndex) => (
-                        <div
-                          key={weekIndex}
-                          className="flex flex-col gap-[5px]"
-                        >
-                          {week.map(
-                            (
-                              item,
-                              dayIndex
-                            ) => {
-
-                              if (!item) {
-                                return (
-                                  <div
-                                    key={
-                                      dayIndex
-                                    }
-                                    className="w-3 h-3"
-                                  />
-                                );
-                              }
-
-                              return (
-                                <div
-                                  key={
-                                    dayIndex
-                                  }
-                                  title={`${item.count} contribution${
-                                    item.count !==
-                                    1
-                                      ? "s"
-                                      : ""
-                                  } on ${formatDate(
-                                    item.date
-                                  )}`}
-                                  className={`w-3 h-3 rounded-[2px] ${getGitHubColor(
-                                    item.level,
-                                    dark
-                                  )} hover:scale-125 transition-all cursor-pointer`}
-                                />
-                              );
-                            }
-                          )}
-                        </div>
-                      )
-                    )}
-
-                  </div>
-                </div>
-
-                {/* Bottom */}
-                <div
-                  className={`border-t mt-6 pt-5 flex flex-col md:flex-row justify-between gap-4 text-sm ${
-                    dark
-                      ? "border-slate-800 text-gray-500"
-                      : "border-slate-200 text-slate-500"
-                  }`}
-                >
-                  <span>
-                    {githubTotal} contributions in{" "}
-                    {selectedYear}
-                  </span>
-
-                  <div className="flex items-center gap-2">
-                    <span>Less</span>
-
-                    {[0, 1, 2, 3, 4].map(
-                      (level) => (
-                        <span
-                          key={level}
-                          className={`w-3 h-3 rounded-[2px] ${getGitHubColor(
-                            level,
-                            dark
-                          )}`}
-                        />
-                      )
-                    )}
-
-                    <span>More</span>
-                  </div>
-                </div>
-
+                <ContributionHeatmap
+                  weeks={graphWeeks}
+                  selectedYear={
+                    selectedYear
+                  }
+                  total={currentTotal}
+                  platform={platform}
+                  dark={dark}
+                />
               </motion.div>
 
-              {/* GitHub Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+              {/* Years */}
+              <div className="flex lg:flex-col gap-3 lg:pt-8">
+                {YEARS.map((year) => (
+                  <button
+                    key={year}
+                    onClick={() =>
+                      setSelectedYear(year)
+                    }
+                    className={`px-6 py-3 rounded-xl border text-sm font-medium transition-all ${
+                      selectedYear === year
+                        ? getActiveYearClass(
+                            platform
+                          )
+                        : dark
+                        ? "border-slate-800 text-slate-400 bg-[#0d0d0d] hover:border-slate-600"
+                        : "border-slate-200 text-slate-500 bg-white hover:border-slate-400"
+                    }`}
+                  >
+                    {year}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+        {/* ========================================
+            Platform Cards
+        ======================================== */}
+        {!loading &&
+          !error && (
+            <>
+              {/* LeetCode extra cards */}
+              {platform === "leetcode" &&
+                leetcode && (
+                  <motion.div
+                    initial={{
+                      opacity: 0,
+                      y: 20,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                    }}
+                    className="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-8"
+                  >
+                    <CodingCard
+                      dark={dark}
+                      value={leetcode.total}
+                      label="Total Solved"
+                    />
+
+                    <CodingCard
+                      dark={dark}
+                      value={leetcode.easy}
+                      label="Easy"
+                    />
+
+                    <CodingCard
+                      dark={dark}
+                      value={leetcode.medium}
+                      label="Medium"
+                    />
+
+                    <CodingCard
+                      dark={dark}
+                      value={leetcode.hard}
+                      label="Hard"
+                    />
+                  </motion.div>
+                )}
+
+              {/* GFG summary cards */}
+              {platform === "gfg" &&
+                gfg && (
+                  <motion.div
+                    initial={{
+                      opacity: 0,
+                      y: 20,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                    }}
+                    className="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-8"
+                  >
+                    <CodingCard
+                      dark={dark}
+                      value={
+                        gfg.summary?.totalSolved ?? 0
+                      }
+                      label="Total Solved"
+                    />
+
+                    <CodingCard
+                      dark={dark}
+                      value={
+                        gfg.summary?.totalActiveDays ?? 0
+                      }
+                      label="Active Days"
+                    />
+
+                    <CodingCard
+                      dark={dark}
+                      value={
+                        gfg.summary?.totalContests ?? 0
+                      }
+                      label="Contests"
+                    />
+
+                    <CodingCard
+                      dark={dark}
+                      value={
+                        gfg.summary?.badgesCount ?? 0
+                      }
+                      label="Badges"
+                    />
+                  </motion.div>
+                )}
+
+              {/* Bottom cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
 
                 <StatCard
                   dark={dark}
-                  icon="🔥"
-                  value={streak}
-                  label="best streak"
+                  icon={
+                    platformStats.first.icon
+                  }
+                  value={
+                    platformStats.first.value
+                  }
+                  label={
+                    platformStats.first.label
+                  }
                 />
 
                 <StatCard
                   dark={dark}
-                  icon="🏅"
-                  value={githubTotal}
-                  label="total contributions"
+                  icon={
+                    platformStats.second.icon
+                  }
+                  value={
+                    platformStats.second.value
+                  }
+                  label={
+                    platformStats.second.label
+                  }
                 />
 
                 <StatCard
                   dark={dark}
-                  icon="✓"
-                  value={activeDays}
-                  label="active days"
+                  icon={
+                    platformStats.third.icon
+                  }
+                  value={
+                    platformStats.third.value
+                  }
+                  label={
+                    platformStats.third.label
+                  }
                 />
 
               </div>
             </>
-          )}
-
-        {/* =====================================
-            LEETCODE
-        ===================================== */}
-        {!loading &&
-          !error &&
-          platform === "leetcode" &&
-          leetcode && (
-            <motion.div
-              initial={{
-                opacity: 0,
-                y: 30,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              className={`rounded-2xl border p-8 ${
-                dark
-                  ? "bg-[#0d0d0d] border-slate-800"
-                  : "bg-white border-slate-200"
-              }`}
-            >
-
-              <div className="flex items-center gap-4 mb-8">
-
-                <div className="w-14 h-14 rounded-xl bg-orange-500/10 flex items-center justify-center">
-                  <SiLeetcode className="text-orange-400 text-3xl" />
-                </div>
-
-                <div>
-                  <h3
-                    className={`text-2xl font-bold ${
-                      dark
-                        ? "text-white"
-                        : "text-slate-900"
-                    }`}
-                  >
-                    LeetCode
-                  </h3>
-
-                  <p className="text-gray-500">
-                    @ajad6299
-                  </p>
-                </div>
-
-              </div>
-
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-
-                <CodingCard
-                  dark={dark}
-                  value={leetcode.total}
-                  label="Total Solved"
-                />
-
-                <CodingCard
-                  dark={dark}
-                  value={leetcode.easy}
-                  label="Easy"
-                />
-
-                <CodingCard
-                  dark={dark}
-                  value={leetcode.medium}
-                  label="Medium"
-                />
-
-                <CodingCard
-                  dark={dark}
-                  value={leetcode.hard}
-                  label="Hard"
-                />
-
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
-
-                <CodingCard
-                  dark={dark}
-                  value={leetcode.rating}
-                  label="Contest Rating"
-                />
-
-                <CodingCard
-                  dark={dark}
-                  value={leetcode.ranking}
-                  label="Ranking"
-                />
-
-              </div>
-
-            </motion.div>
-          )}
-
-        {/* =====================================
-            GFG
-        ===================================== */}
-        {!loading &&
-          !error &&
-          platform === "gfg" &&
-          gfgData && (
-            <div
-              className={`rounded-2xl border p-8 ${
-                dark
-                  ? "bg-[#0d0d0d] border-slate-800"
-                  : "bg-white border-slate-200"
-              }`}
-            >
-              <div className="flex items-center gap-4">
-
-                <div className="w-14 h-14 rounded-xl bg-green-500/10 flex items-center justify-center">
-                  <SiGeeksforgeeks className="text-green-400 text-3xl" />
-                </div>
-
-                <div>
-                  <h3
-                    className={`text-2xl font-bold ${
-                      dark
-                        ? "text-white"
-                        : "text-slate-900"
-                    }`}
-                  >
-                    GeeksforGeeks
-                  </h3>
-
-                  <p className="text-gray-500">
-                    @azadbharaq3i
-                  </p>
-                </div>
-
-              </div>
-
-              <p className="text-gray-500 mt-8">
-                GFG stats API is currently unavailable
-                for this profile.
-              </p>
-
-            </div>
           )}
 
       </div>
@@ -716,38 +811,231 @@ const leetcode = useMemo(() => {
   );
 }
 
-// ==========================================
-// Helpers
-// ==========================================
+// =====================================================
+// Contribution Heatmap
+// =====================================================
 
-function getGitHubColor(level, dark) {
-  const colors = [
-    dark
-      ? "bg-[#1b1b1b]"
-      : "bg-slate-200",
-    "bg-cyan-950",
-    "bg-cyan-800",
-    "bg-cyan-500",
-    "bg-cyan-400",
-  ];
+function ContributionHeatmap({
+  weeks,
+  selectedYear,
+  total,
+  platform,
+  dark,
+}) {
+  const monthPositions =
+    getMonthPositions(selectedYear);
 
-  return colors[
-    Math.min(Number(level) || 0, 4)
-  ];
-}
+  return (
+    <div className="overflow-x-auto pb-1">
 
-function formatDate(date) {
-  if (!date) return "";
+      <div className="min-w-[820px]">
 
-  return new Date(date).toLocaleDateString(
-    "en-US",
-    {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    }
+        {/* Month labels */}
+        <div className="relative ml-10 h-7">
+
+          {monthPositions.map(
+            ({ month, week }) => (
+              <span
+                key={month}
+                className="absolute text-xs text-gray-500"
+                style={{
+                  left: `${week * 17}px`,
+                }}
+              >
+                {month}
+              </span>
+            )
+          )}
+
+        </div>
+
+        {/* Graph */}
+        <div className="flex gap-2">
+
+          {/* Weekday labels */}
+          <div className="w-7 shrink-0 flex flex-col gap-[5px]">
+
+            <div className="h-3" />
+
+            <span className="h-3 text-[9px] text-gray-500">
+              Mon
+            </span>
+
+            <div className="h-3" />
+
+            <span className="h-3 text-[9px] text-gray-500">
+              Wed
+            </span>
+
+            <div className="h-3" />
+
+            <span className="h-3 text-[9px] text-gray-500">
+              Fri
+            </span>
+
+            <div className="h-3" />
+
+          </div>
+
+          {/* Weeks */}
+          <div className="flex gap-[5px] min-w-max">
+
+            {weeks.map(
+              (week, weekIndex) => (
+                <div
+                  key={weekIndex}
+                  className="flex flex-col gap-[5px]"
+                >
+                  {week.map(
+                    (day, dayIndex) => {
+
+                      if (!day) {
+                        return (
+                          <div
+                            key={dayIndex}
+                            className="w-3 h-3"
+                          />
+                        );
+                      }
+
+                      return (
+                        <div
+                          key={dayIndex}
+                          title={`${day.count} ${getActivityLabel(
+                            platform
+                          )} on ${formatDate(
+                            day.date
+                          )}`}
+                          className={`w-3 h-3 rounded-[2px] transition-transform hover:scale-125 cursor-pointer ${getHeatmapColor(
+                            day.level,
+                            platform,
+                            dark
+                          )}`}
+                        />
+                      );
+                    }
+                  )}
+                </div>
+              )
+            )}
+
+          </div>
+        </div>
+
+        {/* Bottom */}
+        <div
+          className={`border-t mt-6 pt-5 flex flex-col md:flex-row justify-between gap-4 text-sm ${
+            dark
+              ? "border-slate-800 text-gray-500"
+              : "border-slate-200 text-slate-500"
+          }`}
+        >
+          <span>
+            {total}{" "}
+            {getActivityLabel(platform)} in{" "}
+            {selectedYear}
+          </span>
+
+          <div className="flex items-center gap-2">
+            <span>Less</span>
+
+            {[0, 1, 2, 3, 4].map(
+              (level) => (
+                <span
+                  key={level}
+                  className={`w-3 h-3 rounded-[2px] ${getHeatmapColor(
+                    level,
+                    platform,
+                    dark
+                  )}`}
+                />
+              )
+            )}
+
+            <span>More</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
   );
 }
+
+// =====================================================
+// Platform Button
+// =====================================================
+
+function PlatformButton({
+  active,
+  onClick,
+  icon,
+  label,
+  color,
+  dark,
+}) {
+  const activeClasses = {
+    cyan:
+      "border-cyan-400 text-cyan-400 bg-cyan-400/10",
+    orange:
+      "border-orange-400 text-orange-400 bg-orange-400/10",
+    green:
+      "border-green-400 text-green-400 bg-green-400/10",
+  };
+
+  return (
+    <button
+      onClick={onClick}
+      className={`flex items-center gap-3 px-6 py-3 rounded-full border transition-all ${
+        active
+          ? activeClasses[color]
+          : dark
+          ? "border-slate-700 text-slate-400 hover:border-slate-500"
+          : "border-slate-300 text-slate-500 hover:border-slate-400"
+      }`}
+    >
+      {icon}
+      {label}
+    </button>
+  );
+}
+
+// =====================================================
+// Coding Card
+// =====================================================
+
+function CodingCard({
+  dark,
+  value,
+  label,
+}) {
+  return (
+    <div
+      className={`rounded-xl border p-6 ${
+        dark
+          ? "bg-slate-900/50 border-slate-800"
+          : "bg-slate-50 border-slate-200"
+      }`}
+    >
+      <p
+        className={`text-3xl font-bold ${
+          dark
+            ? "text-white"
+            : "text-slate-900"
+        }`}
+      >
+        {value}
+      </p>
+
+      <p className="text-gray-500 mt-2">
+        {label}
+      </p>
+    </div>
+  );
+}
+
+// =====================================================
+// Stat Card
+// =====================================================
 
 function StatCard({
   dark,
@@ -801,34 +1089,277 @@ function StatCard({
   );
 }
 
-function CodingCard({
-  dark,
-  value,
-  label,
-}) {
-  return (
-    <div
-      className={`rounded-xl border p-6 ${
-        dark
-          ? "bg-slate-900/50 border-slate-800"
-          : "bg-slate-50 border-slate-200"
-      }`}
-    >
-      <p
-        className={`text-3xl font-bold ${
-          dark
-            ? "text-white"
-            : "text-slate-900"
-        }`}
-      >
-        {value}
-      </p>
+// =====================================================
+// Create complete year weeks
+// =====================================================
 
-      <p className="text-gray-500 mt-2">
-        {label}
-      </p>
-    </div>
+function createYearWeeks(
+  year,
+  contributions
+) {
+  const map = new Map();
+
+  contributions.forEach((item) => {
+    if (!item?.date) return;
+
+    map.set(item.date, {
+      date: item.date,
+      count: Number(item.count) || 0,
+      level:
+        Number(item.level) ||
+        getFallbackLevel(
+          Number(item.count) || 0
+        ),
+    });
+  });
+
+  const start = new Date(
+    `${year}-01-01T00:00:00`
   );
+
+  const end = new Date(
+    `${year}-12-31T00:00:00`
+  );
+
+  const days = [];
+
+  const current = new Date(start);
+
+  while (current <= end) {
+    const date = formatLocalDate(current);
+
+    const item = map.get(date);
+
+    days.push(
+      item || {
+        date,
+        count: 0,
+        level: 0,
+      }
+    );
+
+    current.setDate(
+      current.getDate() + 1
+    );
+  }
+
+  // Sunday = 0
+  const firstDay =
+    start.getDay();
+
+  const weeks = [];
+  let week = [];
+
+  // Empty cells before Jan 1
+  for (
+    let i = 0;
+    i < firstDay;
+    i++
+  ) {
+    week.push(null);
+  }
+
+  days.forEach((day) => {
+    week.push(day);
+
+    if (week.length === 7) {
+      weeks.push(week);
+      week = [];
+    }
+  });
+
+  if (week.length > 0) {
+    while (week.length < 7) {
+      week.push(null);
+    }
+
+    weeks.push(week);
+  }
+
+  return weeks;
+}
+
+// =====================================================
+// Month positions
+// =====================================================
+
+function getMonthPositions(year) {
+  const firstDate = new Date(
+    `${year}-01-01T00:00:00`
+  );
+
+  const firstDay =
+    firstDate.getDay();
+
+  return MONTHS.map(
+    (month, index) => {
+      const date = new Date(
+        year,
+        index,
+        1
+      );
+
+      const difference =
+        Math.floor(
+          (date - firstDate) /
+            (1000 * 60 * 60 * 24)
+        );
+
+      const week = Math.floor(
+        (difference + firstDay) / 7
+      );
+
+      return {
+        month,
+        week,
+      };
+    }
+  );
+}
+
+// =====================================================
+// Heatmap Colors
+// =====================================================
+
+function getHeatmapColor(
+  level,
+  platform,
+  dark
+) {
+  const empty =
+    dark
+      ? "bg-[#1b1b1b]"
+      : "bg-slate-200";
+
+  if (!level) return empty;
+
+  if (platform === "github") {
+    const colors = [
+      empty,
+      "bg-cyan-950",
+      "bg-cyan-800",
+      "bg-cyan-500",
+      "bg-cyan-400",
+    ];
+
+    return colors[
+      Math.min(level, 4)
+    ];
+  }
+
+  if (platform === "leetcode") {
+    const colors = [
+      empty,
+      "bg-orange-950",
+      "bg-orange-800",
+      "bg-orange-500",
+      "bg-orange-400",
+    ];
+
+    return colors[
+      Math.min(level, 4)
+    ];
+  }
+
+  const colors = [
+    empty,
+    "bg-green-950",
+    "bg-green-800",
+    "bg-green-500",
+    "bg-green-400",
+  ];
+
+  return colors[
+    Math.min(level, 4)
+  ];
+}
+
+// =====================================================
+// LeetCode Level
+// =====================================================
+
+function getLeetCodeLevel(count) {
+  if (count <= 0) return 0;
+  if (count >= 10) return 4;
+  if (count >= 6) return 3;
+  if (count >= 3) return 2;
+
+  return 1;
+}
+
+// =====================================================
+// Generic fallback level
+// =====================================================
+
+function getFallbackLevel(count) {
+  if (count <= 0) return 0;
+  if (count >= 10) return 4;
+  if (count >= 6) return 3;
+  if (count >= 3) return 2;
+
+  return 1;
+}
+
+// =====================================================
+// Activity Label
+// =====================================================
+
+function getActivityLabel(platform) {
+  if (platform === "leetcode") {
+    return "submissions";
+  }
+
+  if (platform === "gfg") {
+    return "submissions";
+  }
+
+  return "contributions";
+}
+
+// =====================================================
+// Date Helpers
+// =====================================================
+
+function formatLocalDate(date) {
+  const year =
+    date.getFullYear();
+
+  const month = String(
+    date.getMonth() + 1
+  ).padStart(2, "0");
+
+  const day = String(
+    date.getDate()
+  ).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function formatDate(date) {
+  if (!date) return "";
+
+  return new Date(
+    `${date}T00:00:00`
+  ).toLocaleDateString(
+    "en-US",
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }
+  );
+}
+
+function getActiveYearClass(platform) {
+  if (platform === "github") {
+    return "border-cyan-400 text-cyan-400 bg-cyan-400/10";
+  }
+
+  if (platform === "leetcode") {
+    return "border-orange-400 text-orange-400 bg-orange-400/10";
+  }
+
+  return "border-green-400 text-green-400 bg-green-400/10";
 }
 
 export default Stats;
