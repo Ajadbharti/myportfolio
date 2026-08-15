@@ -34,7 +34,7 @@ const certificates = [
     category: "Frontend",
     description:
       "Completed a 15+ hours MOOC on React.js, including a comprehensive proctored examination.",
-    file: "/certificates/react.png",
+    file: "/certificates/react-certificate.png",
     type: "image",
     icon: SiReact,
     iconColor: "#61DAFB",
@@ -58,13 +58,13 @@ const certificates = [
   {
     id: 3,
     title: "Programming Using C++",
-    subtitle: "Course Completion",
-    issuer: "Infosys Springboard",
+    subtitle: "Course Completion Certificate",
+    issuer: "NEO Colab",
     date: "20 Aug 2025",
     category: "Programming",
     description:
       "Successfully completed the Programming Using C++ course.",
-    file: "/certificates/cpp.pdf",
+    file: "/certificates/neo-colab.pdf",
     type: "pdf",
     icon: SiCplusplus,
     iconColor: "#00599C",
@@ -94,7 +94,7 @@ const certificates = [
     category: "Internship",
     description:
       "Completed the CyberSmart Awareness CSR Project internship with WNS Cares Foundation.",
-    file: "/certificates/cybersmart.pdf",
+    file: "/certificates/cpp.pdf",
     type: "pdf",
     icon: MdSecurity,
     iconColor: "#22C55E",
@@ -128,6 +128,36 @@ const certificates = [
     type: "pdf",
     icon: SiPython,
     iconColor: "#3776AB",
+  },
+
+  {
+    id: 8,
+    title: "Introduction to DSA",
+    subtitle: "Certificate of Achievement",
+    issuer: "Coding Tantra",
+    date: "24 Jan 2025",
+    category: "Programming",
+    description:
+      "Successfully completed 15+ hours of MOOC on Introduction to DSA with Proctored exam, demonstrating dedication to personal growth and development of valuable skills.",
+    file: "/certificates/dsa.pdf",
+    type: "pdf",
+    icon: FaCertificate,
+    iconColor: "#1E88E5",
+  },
+
+  {
+    id: 9,
+    title: "Programming Using C++",
+    subtitle: "Course Completion Certificate",
+    issuer: "Infosys Springboard",
+    date: "20 Aug 2025",
+    category: "Programming",
+    description:
+      "Successfully completed the Programming Using C++ course from Infosys Springboard.",
+    file: "/certificates/infosys.pdf",
+    type: "pdf",
+    icon: SiCplusplus,
+    iconColor: "#00599C",
   },
 ];
 
@@ -199,7 +229,9 @@ function CertificateCard({
 
             <span
               className={`text-sm font-medium ${
-                dark ? "text-slate-400" : "text-slate-600"
+                dark
+                  ? "text-slate-400"
+                  : "text-slate-600"
               }`}
             >
               Certificate PDF
@@ -228,7 +260,7 @@ function CertificateCard({
         {/* Number */}
         <div className="absolute right-4 top-4">
           <span className="text-sm font-bold text-white/60">
-            0{certificate.id}
+            {String(certificate.id).padStart(2, "0")}
           </span>
         </div>
       </button>
@@ -475,6 +507,13 @@ function Certificates() {
   const [selectedCertificate, setSelectedCertificate] =
     useState(null);
 
+  // Automatically calculate unique domains
+  const domainCount = new Set(
+    certificates.map(
+      (certificate) => certificate.category
+    )
+  ).size;
+
   return (
     <section
       id="certificates"
@@ -587,15 +626,16 @@ function Certificates() {
                 certificate={certificate}
                 index={index}
                 dark={dark}
-                onView={
-                  setSelectedCertificate
-                }
+                onView={setSelectedCertificate}
               />
             )
           )}
         </div>
 
-        {/* Bottom Stats */}
+        {/* ========================================
+            BOTTOM STATS
+        ======================================== */}
+
         <motion.div
           initial={{
             opacity: 0,
@@ -617,9 +657,10 @@ function Certificates() {
               : "border-slate-200 bg-slate-50"
           }`}
         >
+          {/* Certifications */}
           <div className="text-center">
             <p className="text-2xl font-bold text-violet-500">
-              7+
+              {certificates.length}+
             </p>
 
             <p
@@ -633,6 +674,7 @@ function Certificates() {
             </p>
           </div>
 
+          {/* Divider */}
           <div
             className={`h-10 w-px ${
               dark
@@ -641,9 +683,10 @@ function Certificates() {
             }`}
           />
 
+          {/* Domains */}
           <div className="text-center">
             <p className="text-2xl font-bold text-violet-500">
-              3+
+              {domainCount}+
             </p>
 
             <p
@@ -657,6 +700,7 @@ function Certificates() {
             </p>
           </div>
 
+          {/* Divider */}
           <div
             className={`h-10 w-px ${
               dark
@@ -665,6 +709,7 @@ function Certificates() {
             }`}
           />
 
+          {/* Learning */}
           <div className="text-center">
             <p className="text-2xl font-bold text-violet-500">
               ∞
@@ -683,13 +728,14 @@ function Certificates() {
         </motion.div>
       </div>
 
-      {/* Modal */}
+      {/* ========================================
+          MODAL
+      ======================================== */}
+
       <AnimatePresence>
         {selectedCertificate && (
           <CertificateModal
-            certificate={
-              selectedCertificate
-            }
+            certificate={selectedCertificate}
             dark={dark}
             onClose={() =>
               setSelectedCertificate(null)
