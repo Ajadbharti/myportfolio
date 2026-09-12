@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+  --bg: #0d1117;
+  --panel: #0f1420;
+  --sidebar: #0b0f17;
+  --border: #1f2937;
+  --accent: #58a6ff;
+  --accent-2: #f472b6;
+}
+
+body {
+  background-color: var(--bg);
+  color: #e6edf3;
+  font-family: "JetBrains Mono", monospace;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 300ms ease;
+}
+
+::selection {
+  background: #58a6ff55;
+}
+
+/* Thin IDE-style scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #2d333b;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3d434b;
+}
+
+.font-display {
+  font-family: "Space Grotesk", "JetBrains Mono", sans-serif;
+}
+
+/* Progress bar fill transition used on the Skills page */
+.skill-fill {
+  transition: width 900ms cubic-bezier(0.16, 1, 0.3, 1);
+}
