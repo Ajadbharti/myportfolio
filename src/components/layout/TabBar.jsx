@@ -1,5 +1,6 @@
 import React from "react";
 import { files } from "../../data/files";
+import FileIcon from "../common/FileIcon";
 
 export default function TabBar({ openKeys, activeFile, onSelect, onClose }) {
   const openFiles = openKeys.map((k) => files.find((f) => f.key === k)).filter(Boolean);
@@ -16,7 +17,7 @@ export default function TabBar({ openKeys, activeFile, onSelect, onClose }) {
               : "text-gray-500 hover:text-gray-300 border-t-2 border-t-transparent"
           }`}
         >
-          <span className="text-[10px]">{f.icon}</span>
+          <FileIcon type={f.type} />
           <span>{f.name}</span>
           <button
             onClick={(e) => {

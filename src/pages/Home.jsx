@@ -14,86 +14,370 @@ export default function Home({ onNavigate }) {
   const [typed, setTyped] = useState("");
 
   useEffect(() => {
-    let i = 0;
     const full = profile.typingLine;
-    const id = setInterval(() => {
-      i++;
-      setTyped(full.slice(0, i));
-      if (i >= full.length) clearInterval(id);
-    }, 45);
-    return () => clearInterval(id);
+
+    let i = 0;
+    let deleting = false;
+    let timeoutId;
+
+    function tick() {
+      if (!deleting) {
+        i++;
+
+        setTyped(full.slice(0, i));
+
+        if (i >= full.length) {
+          deleting = true;
+
+          timeoutId = setTimeout(tick, 1800);
+          return;
+        }
+
+        timeoutId = setTimeout(tick, 55);
+      } else {
+        i--;
+
+        setTyped(full.slice(0, i));
+
+        if (i <= 0) {
+          deleting = false;
+
+          timeoutId = setTimeout(tick, 500);
+          return;
+        }
+
+        timeoutId = setTimeout(tick, 30);
+      }
+    }
+
+    timeoutId = setTimeout(tick, 55);
+
+    return () => clearTimeout(timeoutId);
   }, []);
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-12 animate-fade-in">
-      <p className="text-sm text-emerald-400 font-mono mb-6">
+    <div
+      className="
+        w-full
+        px-8
+        sm:px-10
+        lg:px-12
+        py-8
+        animate-fade-in
+      "
+    >
+      {/* =================================================
+          HELLO
+      ================================================== */}
+
+      <p
+        className="
+          text-sm
+          text-emerald-400
+          font-mono
+          mb-5
+        "
+      >
         // hello world !! Welcome to my portfolio
       </p>
 
-      <h1 className="font-display text-5xl sm:text-6xl font-bold leading-[1.05] mb-6">
-        <span className="text-gray-100">{profile.firstName}</span>
-        <br />
-        <span className="text-[var(--accent-2)]">{profile.lastName}</span>
+      {/* =================================================
+          NAME
+      ================================================== */}
+
+      <h1
+        className="
+          font-display
+          text-6xl
+          sm:text-7xl
+          lg:text-8xl
+          font-bold
+          leading-[0.9]
+          tracking-tight
+          mb-7
+        "
+      >
+        <span className="block text-gray-100">
+          {profile.firstName}
+        </span>
+
+        <span className="block text-[var(--accent-2)]">
+          {profile.lastName}
+        </span>
       </h1>
+
+      {/* =================================================
+          BADGES
+      ================================================== */}
 
       <div className="flex flex-wrap gap-2 mb-5">
         {profile.badges.map((b) => (
           <span
             key={b.label}
-            className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border border-[var(--border)] ${
-              BADGE_COLORS[b.color] || "text-gray-300"
-            }`}
+            className={`
+              flex
+              items-center
+              gap-1.5
+              text-xs
+              px-3
+              py-1.5
+              rounded-full
+              border
+              border-[var(--border)]
+              bg-white/[0.02]
+              ${BADGE_COLORS[b.color] || "text-gray-300"}
+            `}
           >
             <span className="w-1.5 h-1.5 rounded-full bg-current" />
+
             {b.label}
           </span>
         ))}
       </div>
 
-      <p className="text-sm text-gray-400 mb-6 h-5">
+      {/* =================================================
+          TYPING LINE
+      ================================================== */}
+
+      <p
+        className="
+          text-sm
+          text-gray-400
+          mb-8
+          min-h-5
+          font-mono
+        "
+      >
         {typed}
-        <span className="inline-block w-1.5 h-4 bg-[var(--accent)] ml-0.5 align-middle animate-blink" />
+
+        <span
+          className="
+            inline-block
+            w-1.5
+            h-4
+            bg-[var(--accent)]
+            ml-0.5
+            align-middle
+            animate-blink
+          "
+        />
       </p>
 
-      <p className="text-lg text-gray-300 leading-relaxed mb-8 max-w-2xl">
+      {/* =================================================
+          INTRO
+      ================================================== */}
+
+      <p
+        className="
+          text-lg
+          sm:text-xl
+          text-gray-300
+          leading-relaxed
+          mb-8
+          max-w-4xl
+        "
+      >
         I live at the crossroads of{" "}
-        <span className="text-[var(--accent)] font-semibold">frontend craft</span>,{" "}
-        <span className="text-[var(--accent)] font-semibold">backend systems</span>, and{" "}
-        <span className="text-[var(--accent)] font-semibold">clean architecture</span>. I build
-        systems that are genuinely <span className="text-gray-100 font-semibold">reliable</span>{" "}
-        and <span className="text-gray-100 font-semibold">scalable</span>.
+        <span
+          className="
+            text-[var(--accent)]
+            font-semibold
+          "
+        >
+          frontend craft
+        </span>
+        ,{" "}
+        <span
+          className="
+            text-[var(--accent)]
+            font-semibold
+          "
+        >
+          backend systems
+        </span>
+        , and{" "}
+        <span
+          className="
+            text-[var(--accent)]
+            font-semibold
+          "
+        >
+          clean architecture
+        </span>
+        . I build systems that are genuinely{" "}
+        <span className="text-gray-100 font-semibold">
+          reliable
+        </span>{" "}
+        and{" "}
+        <span className="text-gray-100 font-semibold">
+          scalable
+        </span>
+        .
       </p>
 
-      <div className="flex flex-wrap gap-3 mb-10">
+      {/* =================================================
+          BUTTONS
+      ================================================== */}
+
+      <div className="flex flex-wrap gap-3 mb-8">
+        {/* Projects */}
+
         <button
+          type="button"
           onClick={() => onNavigate("projects")}
-          className="flex items-center gap-2 bg-[var(--accent)] text-black font-semibold px-5 py-2.5 rounded-md text-sm hover:opacity-90 transition-opacity"
+          className="
+            flex
+            items-center
+            gap-2
+            bg-[var(--accent)]
+            text-black
+            font-semibold
+            px-5
+            py-2.5
+            rounded-md
+            text-sm
+            hover:opacity-90
+            hover:-translate-y-0.5
+            transition-all
+            btn-glow
+          "
         >
-          📁 Projects
+          <svg
+            width="17"
+            height="17"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M3 7h6l2 2h10v10H3z" />
+          </svg>
+
+          Projects
         </button>
+
+        {/* About */}
+
         <button
+          type="button"
           onClick={() => onNavigate("about")}
-          className="flex items-center gap-2 border border-[var(--border)] px-5 py-2.5 rounded-md text-sm text-gray-200 hover:border-gray-500 transition-colors"
+          className="
+            flex
+            items-center
+            gap-2
+            border
+            border-[var(--border)]
+            bg-white/[0.02]
+            px-5
+            py-2.5
+            rounded-md
+            text-sm
+            text-gray-200
+            hover:border-gray-500
+            hover:-translate-y-0.5
+            transition-all
+          "
         >
-          👤 About Me
+          <svg
+            width="17"
+            height="17"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="8" r="3" />
+            <path d="M5 21c0-3.5 3-6 7-6s7 2.5 7 6" />
+          </svg>
+
+          About Me
         </button>
+
+        {/* Contact */}
+
         <button
+          type="button"
           onClick={() => onNavigate("contact")}
-          className="flex items-center gap-2 border border-[var(--border)] px-5 py-2.5 rounded-md text-sm text-gray-200 hover:border-gray-500 transition-colors"
+          className="
+            flex
+            items-center
+            gap-2
+            border
+            border-[var(--border)]
+            bg-white/[0.02]
+            px-5
+            py-2.5
+            rounded-md
+            text-sm
+            text-gray-200
+            hover:border-gray-500
+            hover:-translate-y-0.5
+            transition-all
+          "
         >
-          ✉ Contact
+          <svg
+            width="17"
+            height="17"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect x="3" y="5" width="18" height="14" rx="2" />
+            <path d="m3 7 9 6 9-6" />
+          </svg>
+
+          Contact
         </button>
       </div>
 
-      <div className="flex flex-col sm:flex-row border border-[var(--border)] mb-8 divide-y sm:divide-y-0 sm:divide-x divide-[var(--border)]">
+      {/* =================================================
+          STATS
+      ================================================== */}
+
+      <div
+        className="
+          flex
+          flex-col
+          sm:flex-row
+          border
+          border-[var(--border)]
+          rounded-lg
+          overflow-hidden
+          divide-y
+          sm:divide-y-0
+          sm:divide-x
+          divide-[var(--border)]
+          bg-gradient-to-b
+          from-white/[0.03]
+          to-transparent
+        "
+      >
         {profile.stats.map((s) => (
-          <StatCard key={s.label} value={s.value} label={s.label} />
+          <StatCard
+            key={s.label}
+            value={s.value}
+            label={s.label}
+          />
         ))}
       </div>
 
-      <div className="flex flex-wrap gap-3">
+      {/* =================================================
+          SOCIALS
+      ================================================== */}
+
+      <div className="flex flex-wrap gap-3 mt-6">
         {profile.socials.map((s) => (
-          <SocialLink key={s.name} {...s} />
+          <SocialLink
+            key={s.name}
+            {...s}
+          />
         ))}
       </div>
     </div>

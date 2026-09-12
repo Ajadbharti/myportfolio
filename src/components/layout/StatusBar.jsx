@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { FiGitBranch, FiRefreshCw, FiAlertTriangle } from "react-icons/fi";
+import { VscError, VscHeart } from "react-icons/vsc";
 import { files } from "../../data/files";
 import { useTheme } from "../../ThemeContext";
 
@@ -16,15 +18,15 @@ export default function StatusBar({ activeFile }) {
     <div className="h-6 flex items-center justify-between px-3 text-[11px] bg-[var(--accent)] text-black/90 font-medium select-none">
       <div className="flex items-center gap-3">
         <span className="flex items-center gap-1">
-          <span>⚠</span> 0
+          <FiAlertTriangle size={11} /> 0
         </span>
         <span className="flex items-center gap-1">
-          <span>⊗</span> 0
+          <VscError size={11} /> 0
         </span>
         <span className="flex items-center gap-1">
-          <span>🌿</span> main
+          <FiGitBranch size={11} /> main
         </span>
-        <span>🔄</span>
+        <FiRefreshCw size={11} />
         <span className="hidden sm:inline">Ajad's Portfolio</span>
       </div>
       <div className="hidden sm:flex items-center gap-3">
@@ -32,7 +34,9 @@ export default function StatusBar({ activeFile }) {
         <span>{file?.lang || "Plain Text"}</span>
         <span>UTF-8</span>
         <span>Prettier</span>
-        <span>💜 {theme.name}</span>
+        <span className="flex items-center gap-1">
+          <VscHeart size={11} /> {theme.name}
+        </span>
         <span>{time}</span>
       </div>
     </div>

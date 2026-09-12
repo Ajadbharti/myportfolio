@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { FiGitBranch } from "react-icons/fi";
 
 export default function SourceControlPanel({ onClose }) {
   const ref = useRef(null);
@@ -22,7 +23,7 @@ export default function SourceControlPanel({ onClose }) {
 
       <div className="px-4 py-3 flex items-center justify-between border-b border-[var(--border)]">
         <span className="flex items-center gap-2 text-sm text-gray-200 font-medium">
-          🌿 main
+          <FiGitBranch size={14} /> main
         </span>
         <span className="text-xs text-gray-500">↑ 1 commit ahead</span>
       </div>

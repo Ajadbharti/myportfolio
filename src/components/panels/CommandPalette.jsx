@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { HiOutlineSparkles } from "react-icons/hi2";
 import { files } from "../../data/files";
+import FileIcon from "../common/FileIcon";
 
 export default function CommandPalette({ onClose, onOpenFile, onOpenCopilot }) {
   const [query, setQuery] = useState("");
@@ -57,7 +59,9 @@ export default function CommandPalette({ onClose, onOpenFile, onOpenCopilot }) {
               }}
               className="w-full flex items-center justify-between px-3 py-2 rounded bg-[var(--accent)]/10 text-[var(--accent)] text-sm mb-2"
             >
-              <span className="flex items-center gap-2">✨ Open Ajad's Copilot</span>
+              <span className="flex items-center gap-2">
+                <HiOutlineSparkles size={14} /> Open Ajad's Copilot
+              </span>
               <kbd className="text-[10px] bg-[var(--border)] px-1.5 py-0.5 rounded text-gray-400">
                 Ctrl+Shift+C
               </kbd>
@@ -78,7 +82,7 @@ export default function CommandPalette({ onClose, onOpenFile, onOpenCopilot }) {
                 className="w-full flex items-center justify-between px-3 py-2 rounded text-sm text-gray-200 hover:bg-white/5"
               >
                 <span className="flex items-center gap-2">
-                  <span className="text-[10px] w-4 text-center">{f.icon}</span>
+                  <FileIcon type={f.type} />
                   {f.name}
                 </span>
                 <span className="text-xs text-gray-600">{f.folder}/</span>

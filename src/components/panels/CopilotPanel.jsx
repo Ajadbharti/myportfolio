@@ -1,4 +1,6 @@
 import React, { useRef, useState } from "react";
+import { HiOutlineSparkles } from "react-icons/hi2";
+import { FiX, FiSend } from "react-icons/fi";
 import { profile } from "../../data/profile";
 
 const SUGGESTIONS = [
@@ -58,10 +60,10 @@ export default function CopilotPanel({ onClose }) {
     <div className="w-80 sm:w-96 shrink-0 border-l border-[var(--border)] bg-[var(--panel)] flex flex-col h-full animate-fade-in">
       <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]">
         <span className="flex items-center gap-2 text-sm font-medium text-gray-200">
-          ✨ {profile.firstName}'s AI Assistant
+          <HiOutlineSparkles size={15} className="text-[var(--accent)]" /> {profile.firstName}'s AI Assistant
         </span>
         <button onClick={onClose} className="text-gray-500 hover:text-gray-200">
-          ✕
+          <FiX size={16} />
         </button>
       </div>
 
@@ -75,8 +77,8 @@ export default function CopilotPanel({ onClose }) {
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4">
         {messages.length === 0 && (
           <div className="text-center mt-4">
-            <div className="w-14 h-14 rounded-full bg-[var(--accent)]/10 flex items-center justify-center text-2xl mx-auto mb-4">
-              👋
+            <div className="w-14 h-14 rounded-full bg-[var(--accent)]/10 flex items-center justify-center mx-auto mb-4">
+              <HiOutlineSparkles size={22} className="text-[var(--accent)]" />
             </div>
             <h3 className="text-sm font-semibold text-gray-100 mb-1">
               Hi! I'm {profile.firstName}'s Copilot
@@ -151,7 +153,7 @@ export default function CopilotPanel({ onClose }) {
             disabled={msgsLeft <= 0 || loading}
             className="text-[var(--accent)] disabled:text-gray-600"
           >
-            ➤
+            <FiSend size={16} />
           </button>
         </form>
         <div className="flex items-center justify-between mt-2 text-[10px] text-gray-600">

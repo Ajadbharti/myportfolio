@@ -1,6 +1,6 @@
 export const projects = [
   {
-    icon: "💪",
+    icon: "fitness",
     category: "FULL STACK · FITNESS · WEB APP",
     categoryColor: "text-orange-400",
     title: "FitForge",
@@ -11,7 +11,7 @@ export const projects = [
     live: "",
   },
   {
-    icon: "🌱",
+    icon: "eco",
     category: "FRONTEND · SUSTAINABILITY · WEB APP",
     categoryColor: "text-emerald-400",
     title: "EcoCalendar",
@@ -22,7 +22,7 @@ export const projects = [
     live: "",
   },
   {
-    icon: "🧮",
+    icon: "tools",
     category: "FULL STACK · TOOLS · UTILITIES",
     categoryColor: "text-blue-400",
     title: "MultiSimulator",

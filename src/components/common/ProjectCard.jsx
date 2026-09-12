@@ -1,10 +1,21 @@
 import React from "react";
+import { FiActivity, FiSun, FiSliders } from "react-icons/fi";
+
+const ICONS = {
+  fitness: FiActivity,
+  eco: FiSun,
+  tools: FiSliders,
+};
 
 export default function ProjectCard({ project }) {
+  const Icon = ICONS[project.icon] || FiSliders;
+
   return (
-    <div className="border border-[var(--border)] rounded-lg p-5 bg-[var(--panel)]/40 hover:border-[var(--accent)]/40 transition-colors flex flex-col">
+    <div className="card-lift border border-[var(--border)] rounded-lg p-5 bg-gradient-to-b from-white/[0.03] to-transparent hover:border-[var(--accent)]/40 flex flex-col">
       <div className="flex items-start justify-between mb-3">
-        <span className="text-2xl">{project.icon}</span>
+        <span className="w-9 h-9 rounded-lg bg-[var(--accent)]/10 flex items-center justify-center">
+          <Icon size={18} className="text-[var(--accent)]" />
+        </span>
         <div className="flex gap-2">
           {project.github && (
             <a
