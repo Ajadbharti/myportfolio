@@ -1,37 +1,150 @@
 import React, { useEffect, useState } from "react";
 
-const LINES = [
-  "$ booting portfolio...",
-  "$ loading src/home.tsx",
-  "$ connecting to Ajad Bharti's workspace",
-  "$ ready.",
-];
-
 export default function IntroLoader({ onFinish }) {
-  const [visibleLines, setVisibleLines] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    if (visibleLines >= LINES.length) {
-      const t = setTimeout(onFinish, 450);
-      return () => clearTimeout(t);
-    }
-    const t = setTimeout(() => setVisibleLines((v) => v + 1), 320);
-    return () => clearTimeout(t);
-  }, [visibleLines, onFinish]);
+    let value = 0;
+
+    const interval = setInterval(() => {
+      value += Math.floor(Math.random() * 4) + 1;
+
+      if (value >= 100) {
+        value = 100;
+      }
+
+      setProgress(value);
+
+      if (value >= 100) {
+        clearInterval(interval);
+
+        setTimeout(() => {
+          setVisible(false);
+
+          setTimeout(() => {
+            if (onFinish) {
+              onFinish();
+            }
+          }, 350);
+        }, 450);
+      }
+    }, 55);
+
+    return () => clearInterval(interval);
+  }, [onFinish]);
+
+  if (!visible) {
+    return null;
+  }
 
   return (
-    <div className="fixed inset-0 z-[999] bg-[var(--bg)] flex items-center justify-center font-mono">
-      <div className="w-[420px] max-w-[90vw]">
-        {LINES.slice(0, visibleLines).map((line, i) => (
-          <p key={i} className="text-sm text-emerald-400 mb-1">
-            {line}
-          </p>
-        ))}
-        {visibleLines < LINES.length && (
-          <p className="text-sm text-emerald-400 inline-flex items-center gap-1">
-            <span className="w-2 h-4 bg-emerald-400 animate-blink" />
-          </p>
-        )}
+    <div className="intro-loader">
+
+      {/* =====================================================
+          GRID BACKGROUND
+      ====================================================== */}
+
+      <div className="intro-grid" />
+
+      {/* =====================================================
+          GLOW
+      ====================================================== */}
+
+      <div className="intro-glow intro-glow-one" />
+      <div className="intro-glow intro-glow-two" />
+
+      {/* =====================================================
+          MAIN
+      ====================================================== */}
+
+      <div className="intro-content">
+
+        {/* ===================================================
+            LOGO
+        ==================================================== */}
+
+        <div className="intro-logo-wrap">
+
+          {/* Orbit */}
+
+          <div className="intro-orbit intro-orbit-one" />
+          <div className="intro-orbit intro-orbit-two" />
+
+          {/* Main square */}
+
+          <div className="intro-logo-box">
+
+            <div className="intro-logo-letter">
+              A
+            </div>
+
+            {/* Corner points */}
+
+            <span className="intro-point intro-point-one" />
+            <span className="intro-point intro-point-two" />
+            <span className="intro-point intro-point-three" />
+            <span className="intro-point intro-point-four" />
+
+          </div>
+
+        </div>
+
+        {/* ===================================================
+            NAME
+        ==================================================== */}
+
+        <h1 className="intro-name">
+          AJAD BHARTI
+        </h1>
+
+        {/* ===================================================
+            ROLE
+        ==================================================== */}
+
+        <p className="intro-role">
+          AI/ML FULL STACK DEVELOPER
+        </p>
+
+        {/* ===================================================
+            LOADING TEXT
+        ==================================================== */}
+
+        <div className="intro-loading-text">
+          <span>LOADING MODULES</span>
+          <span className="intro-dots">
+            ...
+          </span>
+        </div>
+
+        {/* ===================================================
+            PROGRESS BAR
+        ==================================================== */}
+
+        <div className="intro-progress-wrapper">
+
+          <div className="intro-progress-track">
+            <div
+              className="intro-progress-fill"
+              style={{
+                width: `${progress}%`,
+              }}
+            />
+
+            <div
+              className="intro-progress-dot"
+              style={{
+                left: `${progress}%`,
+              }}
+            />
+          </div>
+
+          <div className="intro-progress-number">
+            {progress}%
+          </div>
+
+        </div>
+
       </div>
     </div>
   );

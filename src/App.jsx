@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ThemeProvider } from "./ThemeContext";
 
 import IntroLoader from "./components/common/IntroLoader";
+import CustomCursor from "./components/common/CustomCursor";
 
 import TitleBar from "./components/layout/TitleBar";
 import MenuBar from "./components/layout/MenuBar";
@@ -15,6 +16,7 @@ import SettingsPanel from "./components/panels/SettingsPanel";
 import SourceControlPanel from "./components/panels/SourceControlPanel";
 import CommandPalette from "./components/panels/CommandPalette";
 import CopilotPanel from "./components/panels/CopilotPanel";
+import TerminalPanel from "./components/panels/TerminalPanel";
 
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -23,6 +25,8 @@ import Skills from "./pages/Skills";
 import Experience from "./pages/Experience";
 import Contact from "./pages/Contact";
 import Readme from "./pages/Readme";
+
+import { resumeFile } from "./data/files";
 
 const PAGES = {
   home: Home,
@@ -45,6 +49,7 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [copilotOpen, setCopilotOpen] = useState(false);
+  const [terminalOpen, setTerminalOpen] = useState(false);
 
   /*
    * Desktop  -> Explorer open
@@ -111,6 +116,19 @@ export default function App() {
   }
 
   // =========================================================
+  // RESUME DOWNLOAD
+  // =========================================================
+
+  function downloadResume() {
+    const link = document.createElement("a");
+    link.href = "/" + resumeFile.name;
+    link.download = resumeFile.name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  // =========================================================
   // ACTIVITY BAR
   // =========================================================
 
@@ -129,10 +147,10 @@ export default function App() {
     }
 
     if (key === "search") {
-      setActivityIcon("search");
+      setActivityIcon("explorer");
       setCopilotOpen(false);
-      setPaletteOpen(false);
       setSettingsOpen(false);
+      setPaletteOpen(true);
 
       return;
     }
@@ -147,10 +165,7 @@ export default function App() {
     }
 
     if (key === "extensions") {
-      setActivityIcon("extensions");
-      setCopilotOpen(false);
-      setPaletteOpen(false);
-      setSettingsOpen(false);
+      downloadResume();
 
       return;
     }
@@ -223,6 +238,17 @@ export default function App() {
 
         setCopilotOpen((current) => !current);
         setSettingsOpen(false);
+
+        return;
+      }
+
+      if (
+        ctrl &&
+        (event.key === "`" || event.key === "~")
+      ) {
+        event.preventDefault();
+
+        setTerminalOpen((current) => !current);
 
         return;
       }
@@ -386,6 +412,8 @@ export default function App() {
 
   return (
     <ThemeProvider>
+      <CustomCursor />
+
       {loading && (
         <IntroLoader
           onFinish={() => setLoading(false)}
@@ -419,9 +447,7 @@ export default function App() {
             setSidebarOpen((current) => !current);
           }}
           onToggleTerminal={() => {
-            console.log(
-              "Terminal functionality will be added later."
-            );
+            setTerminalOpen((current) => !current);
           }}
           onOpenCopilot={() => {
             setActivityIcon("copilot");
@@ -709,6 +735,13 @@ export default function App() {
                 <Page onNavigate={openFile} />
               </div>
             </main>
+
+            {terminalOpen && (
+              <TerminalPanel
+                onClose={() => setTerminalOpen(false)}
+                onOpenFile={openFile}
+              />
+            )}
           </div>
 
           {activityIcon === "source-control" && (
@@ -743,6 +776,10 @@ export default function App() {
               onZoomIn={zoomIn}
               onZoomOut={zoomOut}
               onResetZoom={resetZoom}
+              onToggleTerminal={() => {
+                setSettingsOpen(false);
+                setTerminalOpen((current) => !current);
+              }}
             />
           )}
 
@@ -758,7 +795,14 @@ export default function App() {
           )}
         </div>
 
-        <StatusBar activeFile={activeFile} />
+        <StatusBar
+          activeFile={activeFile}
+          onToggleTerminal={() => setTerminalOpen((current) => !current)}
+          onOpenCopilot={() => {
+            setActivityIcon("copilot");
+            setCopilotOpen(true);
+          }}
+        />
       </div>
     </ThemeProvider>
   );

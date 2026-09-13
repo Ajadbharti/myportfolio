@@ -6,7 +6,7 @@ export default {
     extend: {
       fontFamily: {
         mono: ["JetBrains Mono", "Fira Code", "ui-monospace", "monospace"],
-        display: ["Space Grotesk", "ui-sans-serif", "sans-serif"],
+        display: ["Clash Display", "Space Grotesk", "ui-sans-serif", "sans-serif"],
       },
       colors: {
         ide: {

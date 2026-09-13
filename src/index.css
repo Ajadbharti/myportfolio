@@ -84,6 +84,7 @@ select {
 
 .font-display {
   font-family:
+    "Clash Display",
     "Space Grotesk",
     "JetBrains Mono",
     sans-serif;
@@ -644,5 +645,799 @@ select {
   to {
     opacity: 1;
     transform: translateX(0);
+  }
+}
+
+/* =========================================================
+   AJAD PORTFOLIO
+   PREMIUM SQUARE CURSOR
+========================================================= */
+
+html,
+body,
+#root,
+* {
+  cursor: none !important;
+}
+
+/* =========================================================
+   OUTER SQUARE
+========================================================= */
+
+.portfolio-cursor-ring {
+  position: fixed;
+
+  left: 0;
+  top: 0;
+
+  width: 32px;
+  height: 32px;
+
+  border: 1px solid rgba(139, 92, 246, 0.75);
+
+  border-radius: 2px;
+
+  background: rgba(139, 92, 246, 0.025);
+
+  box-shadow:
+    0 0 8px rgba(139, 92, 246, 0.18),
+    inset 0 0 8px rgba(139, 92, 246, 0.04);
+
+  pointer-events: none;
+
+  z-index: 999999;
+
+  will-change: transform;
+
+  transition:
+    width 180ms ease,
+    height 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+/* =========================================================
+   CENTER SQUARE
+========================================================= */
+
+.portfolio-cursor-dot {
+  position: fixed;
+
+  left: 0;
+  top: 0;
+
+  width: 5px;
+  height: 5px;
+
+  background: #a78bfa;
+
+  border-radius: 1px;
+
+  box-shadow:
+    0 0 5px rgba(167, 139, 250, 0.95),
+    0 0 12px rgba(139, 92, 246, 0.7);
+
+  pointer-events: none;
+
+  z-index: 1000000;
+
+  will-change: transform;
+
+  transition:
+    width 160ms ease,
+    height 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+/* =========================================================
+   HOVER
+========================================================= */
+
+.portfolio-cursor-ring.is-hovering {
+  width: 40px;
+  height: 40px;
+
+  border-color: rgba(167, 139, 250, 0.95);
+
+  background: rgba(139, 92, 246, 0.055);
+
+  box-shadow:
+    0 0 16px rgba(139, 92, 246, 0.28),
+    inset 0 0 10px rgba(139, 92, 246, 0.05);
+}
+
+.portfolio-cursor-dot.is-hovering {
+  width: 6px;
+  height: 6px;
+
+  background: #c4b5fd;
+
+  box-shadow:
+    0 0 7px rgba(196, 181, 253, 1),
+    0 0 15px rgba(139, 92, 246, 0.8);
+}
+
+/* =========================================================
+   CLICK
+========================================================= */
+
+.portfolio-cursor-ring.is-clicking {
+  width: 23px;
+  height: 23px;
+
+  border-color: rgba(244, 114, 182, 0.95);
+
+  background: rgba(244, 114, 182, 0.07);
+
+  box-shadow:
+    0 0 20px rgba(244, 114, 182, 0.3);
+}
+
+.portfolio-cursor-dot.is-clicking {
+  width: 7px;
+  height: 7px;
+
+  background: #f9a8d4;
+
+  box-shadow:
+    0 0 8px rgba(249, 168, 212, 1),
+    0 0 16px rgba(244, 114, 182, 0.7);
+}
+
+/* =========================================================
+   MOBILE / TOUCH
+========================================================= */
+
+@media (hover: none), (pointer: coarse) {
+  html,
+  body,
+  #root,
+  * {
+    cursor: auto !important;
+  }
+
+  .portfolio-cursor-ring,
+  .portfolio-cursor-dot {
+    display: none !important;
+  }
+}
+
+/* =========================================================
+   AJAD PORTFOLIO
+   PREMIUM BOOT LOADER
+========================================================= */
+
+.intro-loader {
+  position: fixed;
+
+  inset: 0;
+
+  width: 100vw;
+  height: 100dvh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  background:
+    #02070d;
+
+  color: white;
+
+  z-index: 999999;
+
+  animation:
+    intro-loader-in
+    400ms
+    ease-out;
+}
+
+/* =========================================================
+   GRID
+========================================================= */
+
+.intro-grid {
+  position: absolute;
+
+  inset: 0;
+
+  background-image:
+    linear-gradient(
+      rgba(56, 189, 248, 0.07) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(56, 189, 248, 0.07) 1px,
+      transparent 1px
+    );
+
+  background-size:
+    50px 50px;
+
+  opacity: 0.6;
+
+  mask-image:
+    radial-gradient(
+      ellipse at center,
+      black 0%,
+      transparent 78%
+    );
+
+  -webkit-mask-image:
+    radial-gradient(
+      ellipse at center,
+      black 0%,
+      transparent 78%
+    );
+}
+
+/* =========================================================
+   CENTER GLOW
+========================================================= */
+
+.intro-glow {
+  position: absolute;
+
+  border-radius: 50%;
+
+  pointer-events: none;
+
+  filter: blur(30px);
+}
+
+.intro-glow-one {
+  width: 280px;
+  height: 280px;
+
+  background:
+    rgba(6, 182, 212, 0.08);
+}
+
+.intro-glow-two {
+  width: 180px;
+  height: 180px;
+
+  background:
+    rgba(59, 130, 246, 0.07);
+}
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.intro-content {
+  position: relative;
+
+  z-index: 2;
+
+  width: min(90vw, 520px);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+}
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.intro-logo-wrap {
+  position: relative;
+
+  width: 150px;
+  height: 150px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 28px;
+}
+
+/* =========================================================
+   SQUARE
+========================================================= */
+
+.intro-logo-box {
+  position: relative;
+
+  width: 100px;
+  height: 100px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid
+    rgba(56, 189, 248, 0.85);
+
+  background:
+    rgba(2, 12, 22, 0.75);
+
+  box-shadow:
+    0 0 18px
+    rgba(6, 182, 212, 0.22),
+
+    inset 0 0 20px
+    rgba(6, 182, 212, 0.04);
+
+  animation:
+    intro-square-pulse
+    2.2s
+    ease-in-out
+    infinite;
+}
+
+/* =========================================================
+   LETTER
+========================================================= */
+
+.intro-logo-letter {
+  font-family:
+    "Clash Display",
+    "Space Grotesk",
+    "JetBrains Mono",
+    sans-serif;
+
+  font-size: 38px;
+
+  font-weight: 800;
+
+  color: #22d3ee;
+
+  text-shadow:
+    0 0 8px
+    rgba(34, 211, 238, 0.9),
+
+    0 0 22px
+    rgba(34, 211, 238, 0.55);
+}
+
+/* =========================================================
+   ORBITS
+========================================================= */
+
+.intro-orbit {
+  position: absolute;
+
+  width: 140px;
+  height: 140px;
+
+  border-radius: 50%;
+
+  border: 1px solid
+    rgba(34, 211, 238, 0.25);
+}
+
+.intro-orbit-one {
+  animation:
+    intro-orbit-one
+    4s
+    linear
+    infinite;
+}
+
+.intro-orbit-two {
+  width: 125px;
+  height: 125px;
+
+  border-color:
+    rgba(59, 130, 246, 0.28);
+
+  animation:
+    intro-orbit-two
+    3s
+    linear
+    infinite reverse;
+}
+
+/* =========================================================
+   CORNER POINTS
+========================================================= */
+
+.intro-point {
+  position: absolute;
+
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #22d3ee;
+
+  box-shadow:
+    0 0 8px
+    rgba(34, 211, 238, 0.9);
+}
+
+.intro-point-one {
+  top: -4px;
+  right: -4px;
+}
+
+.intro-point-two {
+  bottom: -4px;
+  left: -4px;
+
+  background: #3b82f6;
+}
+
+.intro-point-three {
+  top: 50%;
+  left: -16px;
+
+  width: 5px;
+  height: 5px;
+
+  opacity: 0.7;
+}
+
+.intro-point-four {
+  top: 15%;
+  right: -18px;
+
+  width: 5px;
+  height: 5px;
+
+  opacity: 0.7;
+}
+
+/* =========================================================
+   NAME
+========================================================= */
+
+.intro-name {
+  margin: 0;
+
+  font-family:
+    "Clash Display",
+    "Space Grotesk",
+    "JetBrains Mono",
+    sans-serif;
+
+  font-size: clamp(
+    2rem,
+    7vw,
+    3.4rem
+  );
+
+  line-height: 1;
+
+  font-weight: 800;
+
+  letter-spacing:
+    0.18em;
+
+  color: #f8fafc;
+
+  text-shadow:
+    0 0 15px
+    rgba(255, 255, 255, 0.08);
+}
+
+/* =========================================================
+   ROLE
+========================================================= */
+
+.intro-role {
+  margin-top: 12px;
+  margin-bottom: 0;
+
+  font-family:
+    "JetBrains Mono",
+    monospace;
+
+  font-size: clamp(
+    0.65rem,
+    2vw,
+    0.85rem
+  );
+
+  letter-spacing:
+    0.45em;
+
+  color: #06b6d4;
+
+  text-shadow:
+    0 0 10px
+    rgba(6, 182, 212, 0.5);
+}
+
+/* =========================================================
+   LOADING TEXT
+========================================================= */
+
+.intro-loading-text {
+  display: flex;
+
+  align-items: center;
+
+  margin-top: 58px;
+
+  font-family:
+    "JetBrains Mono",
+    monospace;
+
+  font-size: 12px;
+
+  letter-spacing:
+    0.35em;
+
+  color: #22d3ee;
+
+  text-transform: uppercase;
+}
+
+.intro-dots {
+  width: 24px;
+
+  text-align: left;
+
+  overflow: hidden;
+
+  animation:
+    intro-dots
+    1.2s
+    steps(4, end)
+    infinite;
+}
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+.intro-progress-wrapper {
+  width: min(350px, 80vw);
+
+  margin-top: 28px;
+}
+
+.intro-progress-track {
+  position: relative;
+
+  width: 100%;
+  height: 3px;
+
+  background:
+    rgba(148, 163, 184, 0.13);
+
+  overflow: visible;
+}
+
+.intro-progress-fill {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  height: 3px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #0ea5e9,
+      #22d3ee
+    );
+
+  box-shadow:
+    0 0 8px
+    rgba(34, 211, 238, 0.8),
+
+    0 0 18px
+    rgba(34, 211, 238, 0.35);
+
+  transition:
+    width 80ms linear;
+}
+
+.intro-progress-dot {
+  position: absolute;
+
+  top: 50%;
+
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  transform:
+    translate(-50%, -50%);
+
+  background: #22d3ee;
+
+  box-shadow:
+    0 0 8px
+    rgba(34, 211, 238, 1),
+
+    0 0 16px
+    rgba(34, 211, 238, 0.65);
+
+  transition:
+    left 80ms linear;
+}
+
+.intro-progress-number {
+  margin-top: 14px;
+
+  font-family:
+    "JetBrains Mono",
+    monospace;
+
+  font-size: 12px;
+
+  letter-spacing:
+    0.15em;
+
+  color: #0ea5e9;
+}
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+
+@keyframes intro-square-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+
+    box-shadow:
+      0 0 18px
+      rgba(6, 182, 212, 0.22),
+
+      inset 0 0 20px
+      rgba(6, 182, 212, 0.04);
+  }
+
+  50% {
+    transform: scale(1.035);
+
+    box-shadow:
+      0 0 28px
+      rgba(6, 182, 212, 0.38),
+
+      inset 0 0 25px
+      rgba(6, 182, 212, 0.08);
+  }
+}
+
+@keyframes intro-orbit-one {
+  from {
+    transform:
+      rotate(0deg);
+  }
+
+  to {
+    transform:
+      rotate(360deg);
+  }
+}
+
+@keyframes intro-orbit-two {
+  from {
+    transform:
+      rotate(0deg)
+      scale(1);
+  }
+
+  50% {
+    transform:
+      rotate(180deg)
+      scale(1.05);
+  }
+
+  to {
+    transform:
+      rotate(360deg)
+      scale(1);
+  }
+}
+
+@keyframes intro-dots {
+  0% {
+    width: 0;
+  }
+
+  25% {
+    width: 7px;
+  }
+
+  50% {
+    width: 14px;
+  }
+
+  75% {
+    width: 21px;
+  }
+
+  100% {
+    width: 24px;
+  }
+}
+
+@keyframes intro-loader-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+  .intro-logo-wrap {
+    width: 125px;
+    height: 125px;
+
+    margin-bottom: 24px;
+  }
+
+  .intro-logo-box {
+    width: 82px;
+    height: 82px;
+  }
+
+  .intro-logo-letter {
+    font-size: 32px;
+  }
+
+  .intro-orbit {
+    width: 118px;
+    height: 118px;
+  }
+
+  .intro-orbit-two {
+    width: 105px;
+    height: 105px;
+  }
+
+  .intro-name {
+    font-size: 2rem;
+
+    letter-spacing:
+      0.12em;
+  }
+
+  .intro-role {
+    font-size: 9px;
+
+    letter-spacing:
+      0.28em;
+  }
+
+  .intro-loading-text {
+    margin-top: 48px;
+
+    font-size: 10px;
+
+    letter-spacing:
+      0.25em;
+  }
+
+  .intro-progress-wrapper {
+    width: 75vw;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-orbit,
+  .intro-logo-box,
+  .intro-dots {
+    animation: none;
   }
 }
