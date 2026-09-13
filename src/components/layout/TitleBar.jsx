@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { FiSearch, FiX, FiMinus, FiMaximize2 } from "react-icons/fi";
+import {
+  FiSearch,
+  FiX,
+  FiMinus,
+  FiMaximize2,
+} from "react-icons/fi";
 
 export default function TitleBar({
   onSearchClick,
@@ -7,7 +12,8 @@ export default function TitleBar({
   onMinimize,
   onMaximize,
 }) {
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isFullscreen, setIsFullscreen] =
+    useState(false);
 
   // =========================================================
   // CLOSE
@@ -19,8 +25,9 @@ export default function TitleBar({
       return;
     }
 
-    // Fallback event for parent component
-    window.dispatchEvent(new CustomEvent("portfolio-close"));
+    window.dispatchEvent(
+      new CustomEvent("portfolio-close")
+    );
   }
 
   // =========================================================
@@ -33,7 +40,6 @@ export default function TitleBar({
       return;
     }
 
-    // Fallback event for parent component
     window.dispatchEvent(
       new CustomEvent("portfolio-minimize")
     );
@@ -48,38 +54,59 @@ export default function TitleBar({
       if (!document.fullscreenElement) {
         await document.documentElement.requestFullscreen();
         setIsFullscreen(true);
+
+        if (onMaximize) {
+          onMaximize(true);
+        }
       } else {
         await document.exitFullscreen();
         setIsFullscreen(false);
-      }
 
-      if (onMaximize) {
-        onMaximize(!isFullscreen);
+        if (onMaximize) {
+          onMaximize(false);
+        }
       }
     } catch (error) {
-      console.error("Fullscreen error:", error);
+      console.error(
+        "Fullscreen error:",
+        error
+      );
     }
   }
 
   return (
-    <div
+    <header
       className="
+        portfolio-titlebar
         h-9
+        min-h-9
+        w-full
         flex
         items-center
+        gap-2
         px-4
         bg-[var(--panel)]
         border-b
         border-[var(--border)]
         select-none
+        overflow-hidden
       "
     >
       {/* =====================================================
           WINDOW CONTROLS
       ====================================================== */}
 
-      <div className="flex items-center gap-2 w-24">
-        {/* CLOSE */}
+      <div
+        className="
+          flex
+          items-center
+          gap-2
+          w-24
+          min-w-24
+          shrink-0
+        "
+      >
+        {/* Close */}
         <button
           type="button"
           onClick={handleClose}
@@ -111,7 +138,7 @@ export default function TitleBar({
           />
         </button>
 
-        {/* MINIMIZE */}
+        {/* Minimize */}
         <button
           type="button"
           onClick={handleMinimize}
@@ -143,13 +170,19 @@ export default function TitleBar({
           />
         </button>
 
-        {/* MAXIMIZE */}
+        {/* Maximize */}
         <button
           type="button"
           onClick={handleMaximize}
-          title={isFullscreen ? "Restore" : "Maximize"}
+          title={
+            isFullscreen
+              ? "Restore"
+              : "Maximize"
+          }
           aria-label={
-            isFullscreen ? "Restore" : "Maximize"
+            isFullscreen
+              ? "Restore"
+              : "Maximize"
           }
           className="
             group
@@ -179,10 +212,17 @@ export default function TitleBar({
       </div>
 
       {/* =====================================================
-          SEARCH / COMMAND PALETTE
+          SEARCH
       ====================================================== */}
 
-      <div className="flex-1 flex justify-center">
+      <div
+        className="
+          flex-1
+          min-w-0
+          flex
+          justify-center
+        "
+      >
         <button
           type="button"
           onClick={onSearchClick}
@@ -199,6 +239,9 @@ export default function TitleBar({
             text-xs
             text-gray-400
             w-[280px]
+            max-w-full
+            sm:max-w-[45vw]
+            shrink-0
             justify-center
             hover:border-gray-600
             transition-colors
@@ -206,26 +249,31 @@ export default function TitleBar({
         >
           <FiSearch
             size={13}
-            className="text-gray-500"
+            className="text-gray-500 shrink-0"
           />
 
-          <span>
-            ajad-bharti{" "}
-            <span className="text-gray-600">
-              :
-            </span>{" "}
+          <span className="truncate">
+            <span className="hidden xs:inline">
+              ajad-bharti{" "}
+              <span className="text-gray-600">
+                :
+              </span>{" "}
+            </span>
             portfolio
           </span>
 
           <kbd
             className="
-              ml-2
+              hidden
+              sm:inline-block
+              ml-1
               text-[10px]
               bg-[var(--border)]
               px-1.5
               py-0.5
               rounded
               text-gray-300
+              shrink-0
             "
           >
             Ctrl P
@@ -233,8 +281,8 @@ export default function TitleBar({
         </button>
       </div>
 
-      {/* RIGHT SPACER */}
-      <div className="w-24" />
-    </div>
+      {/* Right spacer */}
+      <div className="w-24 min-w-24 shrink-0 hidden sm:block" />
+    </header>
   );
 }

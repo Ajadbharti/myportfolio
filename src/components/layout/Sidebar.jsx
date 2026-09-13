@@ -10,8 +10,10 @@ export default function Sidebar({
   onOpenCopilot,
 }) {
   return (
-    <div
+    <aside
+      data-panel="sidebar"
       className="
+        portfolio-sidebar
         w-[240px]
         min-w-[240px]
         shrink-0
@@ -20,9 +22,11 @@ export default function Sidebar({
         border-[var(--border)]
         flex
         flex-col
+        min-h-0
+        overflow-hidden
       "
     >
-      {/* Sidebar Header */}
+      {/* Header */}
       <div
         className="
           px-4
@@ -31,13 +35,22 @@ export default function Sidebar({
           tracking-widest
           text-gray-500
           font-semibold
+          shrink-0
         "
       >
         PORTFOLIO
       </div>
 
       {/* Files */}
-      <div className="flex-1 overflow-y-auto px-1">
+      <div
+        className="
+          flex-1
+          min-h-0
+          overflow-y-auto
+          overflow-x-hidden
+          px-1
+        "
+      >
         {files.map((f) => (
           <button
             key={f.key}
@@ -99,7 +112,7 @@ export default function Sidebar({
       </div>
 
       {/* Copilot */}
-      <div className="p-2 border-t border-[var(--border)]">
+      <div className="p-2 border-t border-[var(--border)] shrink-0">
         <button
           type="button"
           onClick={onOpenCopilot}
@@ -126,17 +139,20 @@ export default function Sidebar({
               text-xs
               font-medium
               text-gray-200
+              min-w-0
             "
           >
             <HiOutlineSparkles
               size={14}
-              className="text-[var(--accent)]"
+              className="text-[var(--accent)] shrink-0"
             />
 
-            Ajad's Copilot
+            <span className="truncate">
+              Ajad's Copilot
+            </span>
           </span>
 
-          <span className="text-[10px] text-gray-500">
+          <span className="text-[10px] text-gray-500 shrink-0">
             AI
           </span>
         </button>
@@ -154,6 +170,7 @@ export default function Sidebar({
           justify-between
           text-[11px]
           text-gray-500
+          shrink-0
         "
       >
         <span className="flex items-center gap-1.5">
@@ -163,11 +180,12 @@ export default function Sidebar({
 
         <span className="flex items-center gap-2">
           <span>↑1</span>
+
           <span className="text-emerald-500">
             +3
           </span>
         </span>
       </div>
-    </div>
+    </aside>
   );
 }

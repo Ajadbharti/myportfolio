@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { ThemeProvider } from "./ThemeContext";
-import {
-  FiSearch,
-  FiFileText,
-  FiCode,
-  FiPackage,
-} from "react-icons/fi";
 
 import IntroLoader from "./components/common/IntroLoader";
 
@@ -41,30 +35,21 @@ const PAGES = {
 };
 
 export default function App() {
-  // =========================================================
-  // STATE
-  // =========================================================
-
   const [loading, setLoading] = useState(true);
 
   const [activeFile, setActiveFile] = useState("home");
-
   const [openTabs, setOpenTabs] = useState(["home"]);
 
   const [activityIcon, setActivityIcon] = useState("explorer");
 
   const [settingsOpen, setSettingsOpen] = useState(false);
-
   const [paletteOpen, setPaletteOpen] = useState(false);
-
   const [copilotOpen, setCopilotOpen] = useState(false);
 
-  // IMPORTANT:
-  // Ye state sirf Explorer sidebar ke hide/show ke liye hai.
+  // Explorer sidebar
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const [zoom, setZoom] = useState(1);
-
   const [searchText, setSearchText] = useState("");
 
   // =========================================================
@@ -88,8 +73,10 @@ export default function App() {
 
     setPaletteOpen(false);
 
-    // File open karne par Explorer active rahega
+    // Opening a file always returns to Explorer
     setActivityIcon("explorer");
+
+    // Make sure Explorer is visible
     setSidebarOpen(true);
   }
 
@@ -114,78 +101,46 @@ export default function App() {
   // =========================================================
 
   function handleActivitySelect(key) {
-    // =======================================================
-    // 1. EXPLORER
-    // ONLY EXPLORER TOGGLES SIDEBAR
-    // =======================================================
-
+    // Explorer ONLY toggles the Explorer sidebar
     if (key === "explorer") {
       setActivityIcon("explorer");
-
-      // ONLY THIS BUTTON changes sidebarOpen
       setSidebarOpen((current) => !current);
-
       return;
     }
 
-    // =======================================================
-    // 2. SEARCH
-    // sidebarOpen ko touch nahi karna
-    // =======================================================
-
+    // Search
     if (key === "search") {
       setActivityIcon("search");
-
       setCopilotOpen(false);
       setPaletteOpen(false);
       setSettingsOpen(false);
-
       return;
     }
 
-    // =======================================================
-    // 3. SOURCE CONTROL
-    // sidebarOpen ko touch nahi karna
-    // =======================================================
-
+    // Source Control
     if (key === "source-control") {
       setActivityIcon("source-control");
-
       setCopilotOpen(false);
       setPaletteOpen(false);
       setSettingsOpen(false);
-
       return;
     }
 
-    // =======================================================
-    // 4. EXTENSIONS
-    // sidebarOpen ko touch nahi karna
-    // =======================================================
-
+    // Extensions
     if (key === "extensions") {
       setActivityIcon("extensions");
-
       setCopilotOpen(false);
       setPaletteOpen(false);
       setSettingsOpen(false);
-
       return;
     }
 
-    // =======================================================
-    // 5. COPILOT
-    // sidebarOpen ko touch nahi karna
-    // =======================================================
-
+    // Copilot
     if (key === "copilot") {
       setActivityIcon("copilot");
-
       setCopilotOpen((current) => !current);
-
       setPaletteOpen(false);
       setSettingsOpen(false);
-
       return;
     }
   }
@@ -211,11 +166,15 @@ export default function App() {
   // =========================================================
 
   function zoomIn() {
-    setZoom((current) => Math.min(current + 0.1, 1.5));
+    setZoom((current) =>
+      Math.min(Number((current + 0.1).toFixed(1)), 1.5)
+    );
   }
 
   function zoomOut() {
-    setZoom((current) => Math.max(current - 0.1, 0.7));
+    setZoom((current) =>
+      Math.max(Number((current - 0.1).toFixed(1)), 0.7)
+    );
   }
 
   function resetZoom() {
@@ -230,7 +189,7 @@ export default function App() {
     function handleKeyboard(event) {
       const ctrl = event.ctrlKey || event.metaKey;
 
-      // Ctrl + P
+      // Command Palette
       if (ctrl && event.key.toLowerCase() === "p") {
         event.preventDefault();
 
@@ -240,7 +199,7 @@ export default function App() {
         return;
       }
 
-      // Ctrl + Shift + C
+      // Copilot
       if (
         ctrl &&
         event.shiftKey &&
@@ -254,7 +213,7 @@ export default function App() {
         return;
       }
 
-      // Ctrl + B
+      // Explorer
       if (
         ctrl &&
         !event.shiftKey &&
@@ -262,13 +221,12 @@ export default function App() {
       ) {
         event.preventDefault();
 
-        // Sidebar shortcut
         setSidebarOpen((current) => !current);
 
         return;
       }
 
-      // Ctrl + +
+      // Zoom In
       if (
         ctrl &&
         (event.key === "+" || event.key === "=")
@@ -280,7 +238,7 @@ export default function App() {
         return;
       }
 
-      // Ctrl + -
+      // Zoom Out
       if (ctrl && event.key === "-") {
         event.preventDefault();
 
@@ -289,7 +247,7 @@ export default function App() {
         return;
       }
 
-      // Ctrl + 0
+      // Reset Zoom
       if (ctrl && event.key === "0") {
         event.preventDefault();
 
@@ -298,7 +256,7 @@ export default function App() {
         return;
       }
 
-      // F11
+      // Fullscreen
       if (event.key === "F11") {
         event.preventDefault();
 
@@ -307,7 +265,7 @@ export default function App() {
         return;
       }
 
-      // Escape
+      // Close overlays
       if (event.key === "Escape") {
         setPaletteOpen(false);
         setCopilotOpen(false);
@@ -315,10 +273,16 @@ export default function App() {
       }
     }
 
-    document.addEventListener("keydown", handleKeyboard);
+    document.addEventListener(
+      "keydown",
+      handleKeyboard
+    );
 
     return () => {
-      document.removeEventListener("keydown", handleKeyboard);
+      document.removeEventListener(
+        "keydown",
+        handleKeyboard
+      );
     };
   }, []);
 
@@ -339,7 +303,10 @@ export default function App() {
       setSettingsOpen(true);
     }
 
-    document.addEventListener("open-file", handleOpenFile);
+    document.addEventListener(
+      "open-file",
+      handleOpenFile
+    );
 
     document.addEventListener(
       "open-settings",
@@ -360,7 +327,7 @@ export default function App() {
   }, []);
 
   // =========================================================
-  // SEARCH DATA
+  // SEARCHABLE FILES
   // =========================================================
 
   const searchableFiles = [
@@ -401,40 +368,46 @@ export default function App() {
     },
   ];
 
-  const filteredFiles = searchableFiles.filter((file) => {
-    const query = searchText.toLowerCase().trim();
+  const filteredFiles = searchableFiles.filter(
+    (file) => {
+      const query = searchText
+        .toLowerCase()
+        .trim();
 
-    if (!query) {
-      return true;
+      if (!query) {
+        return true;
+      }
+
+      return (
+        file.name
+          .toLowerCase()
+          .includes(query) ||
+        file.description
+          .toLowerCase()
+          .includes(query)
+      );
     }
-
-    return (
-      file.name.toLowerCase().includes(query) ||
-      file.description.toLowerCase().includes(query)
-    );
-  });
+  );
 
   const Page = PAGES[activeFile] || Home;
 
-  // =========================================================
-  // UI
-  // =========================================================
-
   return (
     <ThemeProvider>
-      {/* =====================================================
-          INTRO LOADER
-      ====================================================== */}
-
       {loading && (
         <IntroLoader
           onFinish={() => setLoading(false)}
         />
       )}
 
+      {/* =====================================================
+          APPLICATION
+      ====================================================== */}
+
       <div
         className="
+          portfolio-app
           h-screen
+          min-h-0
           w-full
           flex
           flex-col
@@ -443,9 +416,9 @@ export default function App() {
           overflow-hidden
         "
       >
-        {/* =================================================
+        {/* ===================================================
             TITLE BAR
-        ================================================== */}
+        ==================================================== */}
 
         <TitleBar
           onSearchClick={() => {
@@ -453,9 +426,9 @@ export default function App() {
           }}
         />
 
-        {/* =================================================
+        {/* ===================================================
             MENU BAR
-        ================================================== */}
+        ==================================================== */}
 
         <MenuBar
           onOpenPalette={() => {
@@ -483,16 +456,19 @@ export default function App() {
           }}
         />
 
-        {/* =================================================
+        {/* ===================================================
             MAIN WORKSPACE
-        ================================================== */}
+        ==================================================== */}
 
         <div
           className="
+            portfolio-workspace
             flex
             flex-1
             min-h-0
+            min-w-0
             relative
+            overflow-hidden
           "
         >
           {/* =================================================
@@ -503,15 +479,14 @@ export default function App() {
             active={activityIcon}
             onSelect={handleActivitySelect}
             onSettingsClick={() => {
-              setSettingsOpen((current) => !current);
+              setSettingsOpen(
+                (current) => !current
+              );
             }}
           />
 
           {/* =================================================
-              EXPLORER SIDEBAR
-
-              ONLY Explorer + sidebarOpen
-              controls this sidebar.
+              EXPLORER
           ================================================== */}
 
           {activityIcon === "explorer" &&
@@ -528,20 +503,21 @@ export default function App() {
 
           {/* =================================================
               SEARCH PANEL
-
-              This does NOT modify sidebarOpen.
           ================================================== */}
 
           {activityIcon === "search" && (
             <div
+              data-panel="search"
               className="
                 w-64
                 shrink-0
+                min-w-0
                 bg-[var(--sidebar)]
                 border-r
                 border-[var(--border)]
                 flex
                 flex-col
+                overflow-hidden
               "
             >
               <div
@@ -552,127 +528,92 @@ export default function App() {
                   tracking-widest
                   text-gray-500
                   font-semibold
-                  border-b
-                  border-[var(--border)]
                 "
               >
                 SEARCH
               </div>
 
-              <div className="p-3">
-                <div
+              <div className="px-3 pb-3">
+                <input
+                  value={searchText}
+                  onChange={(event) =>
+                    setSearchText(
+                      event.target.value
+                    )
+                  }
+                  placeholder="Search files..."
                   className="
-                    flex
-                    items-center
-                    gap-2
+                    w-full
+                    min-w-0
                     bg-[var(--bg)]
                     border
                     border-[var(--border)]
-                    rounded-md
+                    rounded
                     px-3
                     py-2
-                    focus-within:border-[var(--accent)]
+                    text-xs
+                    text-gray-300
+                    outline-none
+                    focus:border-[var(--accent)]
                   "
-                >
-                  <FiSearch
-                    size={14}
-                    className="text-gray-500 shrink-0"
-                  />
-
-                  <input
-                    autoFocus
-                    type="text"
-                    value={searchText}
-                    onChange={(event) =>
-                      setSearchText(event.target.value)
-                    }
-                    placeholder="Search files..."
-                    className="
-                      w-full
-                      bg-transparent
-                      outline-none
-                      text-xs
-                      text-gray-200
-                      placeholder:text-gray-600
-                    "
-                  />
-                </div>
+                />
               </div>
 
-              <div className="flex-1 overflow-y-auto px-2">
-                <div
-                  className="
-                    px-2
-                    py-2
-                    text-[10px]
-                    tracking-widest
-                    text-gray-600
-                    font-semibold
-                  "
-                >
-                  RESULTS
-                </div>
+              <div
+                className="
+                  flex-1
+                  min-h-0
+                  overflow-y-auto
+                  px-2
+                "
+              >
+                {filteredFiles.map((file) => (
+                  <button
+                    key={file.key}
+                    type="button"
+                    onClick={() =>
+                      openFile(file.key)
+                    }
+                    className="
+                      w-full
+                      text-left
+                      px-3
+                      py-2
+                      rounded
+                      hover:bg-white/5
+                      transition-colors
+                    "
+                  >
+                    <div className="text-xs text-gray-300 truncate">
+                      {file.name}
+                    </div>
 
-                {filteredFiles.length === 0 ? (
-                  <div className="px-2 py-6 text-center text-xs text-gray-600">
-                    No results found
-                  </div>
-                ) : (
-                  filteredFiles.map((file) => (
-                    <button
-                      key={file.key}
-                      type="button"
-                      onClick={() => openFile(file.key)}
-                      className="
-                        w-full
-                        text-left
-                        flex
-                        items-center
-                        gap-2
-                        px-2
-                        py-2
-                        rounded
-                        hover:bg-white/[0.05]
-                        transition-colors
-                      "
-                    >
-                      <FiFileText
-                        size={14}
-                        className="text-gray-500 shrink-0"
-                      />
-
-                      <div className="min-w-0">
-                        <div className="text-xs text-gray-300 truncate">
-                          {file.name}
-                        </div>
-
-                        <div className="text-[10px] text-gray-600 truncate">
-                          {file.description}
-                        </div>
-                      </div>
-                    </button>
-                  ))
-                )}
+                    <div className="text-[10px] text-gray-600 truncate">
+                      {file.description}
+                    </div>
+                  </button>
+                ))}
               </div>
             </div>
           )}
 
           {/* =================================================
               EXTENSIONS PANEL
-
-              This does NOT modify sidebarOpen.
           ================================================== */}
 
           {activityIcon === "extensions" && (
             <div
+              data-panel="extensions"
               className="
                 w-64
                 shrink-0
+                min-w-0
                 bg-[var(--sidebar)]
                 border-r
                 border-[var(--border)]
                 flex
                 flex-col
+                overflow-hidden
               "
             >
               <div
@@ -683,137 +624,38 @@ export default function App() {
                   tracking-widest
                   text-gray-500
                   font-semibold
-                  border-b
-                  border-[var(--border)]
                 "
               >
                 EXTENSIONS
               </div>
 
-              <div className="p-3">
-                <div
-                  className="
-                    flex
-                    items-center
-                    gap-2
-                    bg-[var(--bg)]
-                    border
-                    border-[var(--border)]
-                    rounded-md
-                    px-3
-                    py-2
-                  "
-                >
-                  <FiSearch
-                    size={14}
-                    className="text-gray-500"
-                  />
-
-                  <input
-                    type="text"
-                    placeholder="Search Extensions..."
-                    className="
-                      w-full
-                      bg-transparent
-                      outline-none
-                      text-xs
-                      text-gray-300
-                      placeholder:text-gray-600
-                    "
-                  />
-                </div>
-              </div>
-
-              <div className="flex-1 overflow-y-auto px-2">
-                {/* Skills */}
-
-                <button
-                  type="button"
-                  onClick={() => openFile("skills")}
-                  className="
-                    w-full
-                    text-left
-                    flex
-                    items-center
-                    gap-3
-                    p-3
-                    rounded-md
-                    hover:bg-white/[0.05]
-                    transition-colors
-                  "
-                >
+              <div className="p-3 space-y-2">
+                {[
+                  "React",
+                  "Tailwind CSS",
+                  "ESLint",
+                  "Prettier",
+                  "GitHub Copilot",
+                ].map((extension) => (
                   <div
+                    key={extension}
                     className="
-                      w-9
-                      h-9
-                      rounded
-                      bg-blue-500/10
+                      p-3
+                      rounded-md
                       border
-                      border-blue-500/20
-                      flex
-                      items-center
-                      justify-center
-                      text-blue-400
+                      border-[var(--border)]
+                      bg-[var(--panel)]
                     "
                   >
-                    <FiCode size={17} />
-                  </div>
-
-                  <div className="min-w-0">
-                    <div className="text-sm text-gray-300 truncate">
-                      Skills
+                    <div className="text-xs text-gray-200">
+                      {extension}
                     </div>
 
-                    <div className="text-[10px] text-gray-600 truncate">
-                      React • JavaScript • Tailwind
+                    <div className="text-[10px] text-gray-600 mt-1">
+                      Installed
                     </div>
                   </div>
-                </button>
-
-                {/* Experience */}
-
-                <button
-                  type="button"
-                  onClick={() => openFile("experience")}
-                  className="
-                    w-full
-                    text-left
-                    flex
-                    items-center
-                    gap-3
-                    p-3
-                    rounded-md
-                    hover:bg-white/[0.05]
-                    transition-colors
-                  "
-                >
-                  <div
-                    className="
-                      w-9
-                      h-9
-                      rounded
-                      bg-purple-500/10
-                      border
-                      border-purple-500/20
-                      flex
-                      items-center
-                      justify-center
-                      text-purple-400
-                    "
-                  >
-                    <FiPackage size={17} />
-                  </div>
-
-                  <div className="min-w-0">
-                    <div className="text-sm text-gray-300 truncate">
-                      Experience
-                    </div>
-
-                    <div className="text-[10px] text-gray-600 truncate">
-                      Backend • AI/ML • Full Stack
-                    </div>
-                  </div>
-                </button>
+                ))}
               </div>
             </div>
           )}
@@ -824,26 +666,35 @@ export default function App() {
 
           <div
             className="
+              portfolio-editor
               flex-1
               min-w-0
+              min-h-0
               flex
               flex-col
+              overflow-hidden
             "
           >
+            {/* Tabs */}
             <TabBar
               openKeys={openTabs}
               activeFile={activeFile}
-              onSelect={(key) => {
-                setActiveFile(key);
-              }}
+              onSelect={openFile}
               onClose={closeTab}
             />
 
-            <Breadcrumb activeFile={activeFile} />
+            {/* Breadcrumb */}
+            <Breadcrumb
+              activeFile={activeFile}
+            />
 
-            <div
+            {/* Scrollable Editor */}
+            <main
               className="
+                portfolio-editor-scroll
                 flex-1
+                min-h-0
+                min-w-0
                 overflow-y-auto
                 overflow-x-hidden
               "
@@ -852,12 +703,32 @@ export default function App() {
                 style={{
                   zoom: zoom,
                 }}
-                className="min-h-full"
+                className="
+                  portfolio-editor-content
+                  min-h-full
+                  w-full
+                  min-w-0
+                "
               >
-                <Page onNavigate={openFile} />
+                <Page
+                  onNavigate={openFile}
+                />
               </div>
-            </div>
+            </main>
           </div>
+
+          {/* =================================================
+              SOURCE CONTROL
+          ================================================== */}
+
+          {activityIcon ===
+            "source-control" && (
+            <SourceControlPanel
+              onClose={() =>
+                setActivityIcon("explorer")
+              }
+            />
+          )}
 
           {/* =================================================
               COPILOT
@@ -865,21 +736,9 @@ export default function App() {
 
           {copilotOpen && (
             <CopilotPanel
-              onClose={() => {
-                setCopilotOpen(false);
-              }}
-            />
-          )}
-
-          {/* =================================================
-              SOURCE CONTROL
-          ================================================== */}
-
-          {activityIcon === "source-control" && (
-            <SourceControlPanel
-              onClose={() => {
-                setActivityIcon("explorer");
-              }}
+              onClose={() =>
+                setCopilotOpen(false)
+              }
             />
           )}
 
@@ -889,53 +748,50 @@ export default function App() {
 
           {settingsOpen && (
             <SettingsPanel
-              onClose={() => {
-                setSettingsOpen(false);
-              }}
-              onOpenPalette={() => {
-                setSettingsOpen(false);
-                setPaletteOpen(true);
-              }}
+              onClose={() =>
+                setSettingsOpen(false)
+              }
+              onOpenPalette={() =>
+                setPaletteOpen(true)
+              }
               onOpenCopilot={() => {
                 setSettingsOpen(false);
-                setActivityIcon("copilot");
                 setCopilotOpen(true);
               }}
-              onToggleTerminal={() => {
-                console.log(
-                  "Terminal functionality will be added later."
-                );
-              }}
-              onToggleSidebar={() => {
-                setSidebarOpen((current) => !current);
-              }}
+              onFullscreen={
+                toggleFullscreen
+              }
+              onZoomIn={zoomIn}
+              onZoomOut={zoomOut}
+              onResetZoom={resetZoom}
+            />
+          )}
+
+          {/* =================================================
+              COMMAND PALETTE
+          ================================================== */}
+
+          {paletteOpen && (
+            <CommandPalette
+              files={searchableFiles}
+              onSearchChange={
+                setSearchText
+              }
+              onOpenFile={openFile}
+              onClose={() =>
+                setPaletteOpen(false)
+              }
             />
           )}
         </div>
 
-        {/* =================================================
+        {/* ===================================================
             STATUS BAR
-        ================================================== */}
+        ==================================================== */}
 
-        <StatusBar activeFile={activeFile} />
-
-        {/* =================================================
-            COMMAND PALETTE
-        ================================================== */}
-
-        {paletteOpen && (
-          <CommandPalette
-            onClose={() => {
-              setPaletteOpen(false);
-            }}
-            onOpenFile={openFile}
-            onOpenCopilot={() => {
-              setPaletteOpen(false);
-              setActivityIcon("copilot");
-              setCopilotOpen(true);
-            }}
-          />
-        )}
+        <StatusBar
+          activeFile={activeFile}
+        />
       </div>
     </ThemeProvider>
   );
