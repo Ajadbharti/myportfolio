@@ -58,11 +58,16 @@ export default function Home({ onNavigate }) {
   return (
     <div
       className="
+        home-page
         w-full
-        px-8
-        sm:px-10
-        lg:px-12
-        py-8
+        min-h-full
+        px-4
+        py-6
+        sm:px-6
+        sm:py-8
+        md:px-8
+        lg:px-10
+        xl:px-12
         animate-fade-in
       "
     >
@@ -72,10 +77,13 @@ export default function Home({ onNavigate }) {
 
       <p
         className="
-          text-sm
+          text-xs
+          sm:text-sm
           text-emerald-400
           font-mono
-          mb-5
+          mb-4
+          sm:mb-5
+          leading-relaxed
         "
       >
         // hello world !! Welcome to my portfolio
@@ -88,13 +96,15 @@ export default function Home({ onNavigate }) {
       <h1
         className="
           font-display
-          text-6xl
-          sm:text-7xl
+          text-5xl
+          sm:text-6xl
+          md:text-7xl
           lg:text-8xl
           font-bold
           leading-[0.9]
           tracking-tight
-          mb-7
+          mb-5
+          sm:mb-7
         "
       >
         <span className="block text-gray-100">
@@ -110,25 +120,36 @@ export default function Home({ onNavigate }) {
           BADGES
       ================================================== */}
 
-      <div className="flex flex-wrap gap-2 mb-5">
+      <div
+        className="
+          flex
+          flex-wrap
+          gap-2
+          mb-5
+          max-w-full
+        "
+      >
         {profile.badges.map((b) => (
           <span
             key={b.label}
             className={`
-              flex
+              inline-flex
               items-center
               gap-1.5
-              text-xs
-              px-3
+              text-[11px]
+              sm:text-xs
+              px-2.5
+              sm:px-3
               py-1.5
               rounded-full
               border
               border-[var(--border)]
               bg-white/[0.02]
+              whitespace-nowrap
               ${BADGE_COLORS[b.color] || "text-gray-300"}
             `}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-current" />
+            <span className="w-1.5 h-1.5 rounded-full bg-current shrink-0" />
 
             {b.label}
           </span>
@@ -141,11 +162,15 @@ export default function Home({ onNavigate }) {
 
       <p
         className="
-          text-sm
+          text-xs
+          sm:text-sm
           text-gray-400
-          mb-8
+          mb-6
+          sm:mb-8
           min-h-5
           font-mono
+          leading-relaxed
+          break-words
         "
       >
         {typed}
@@ -169,11 +194,15 @@ export default function Home({ onNavigate }) {
 
       <p
         className="
-          text-lg
-          sm:text-xl
+          text-base
+          sm:text-lg
+          lg:text-xl
           text-gray-300
-          leading-relaxed
-          mb-8
+          leading-7
+          sm:leading-relaxed
+          mb-6
+          sm:mb-8
+          w-full
           max-w-4xl
         "
       >
@@ -219,27 +248,42 @@ export default function Home({ onNavigate }) {
           BUTTONS
       ================================================== */}
 
-      <div className="flex flex-wrap gap-3 mb-8">
+      <div
+        className="
+          flex
+          flex-wrap
+          items-center
+          gap-2.5
+          sm:gap-3
+          mb-7
+          sm:mb-8
+        "
+      >
         {/* Projects */}
 
         <button
           type="button"
           onClick={() => onNavigate("projects")}
           className="
-            flex
+            inline-flex
             items-center
+            justify-center
             gap-2
+            min-h-10
+            px-4
+            sm:px-5
+            py-2.5
+            rounded-md
+            text-xs
+            sm:text-sm
             bg-[var(--accent)]
             text-black
             font-semibold
-            px-5
-            py-2.5
-            rounded-md
-            text-sm
             hover:opacity-90
             hover:-translate-y-0.5
             transition-all
             btn-glow
+            whitespace-nowrap
           "
         >
           <svg
@@ -251,6 +295,7 @@ export default function Home({ onNavigate }) {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            aria-hidden="true"
           >
             <path d="M3 7h6l2 2h10v10H3z" />
           </svg>
@@ -264,20 +309,25 @@ export default function Home({ onNavigate }) {
           type="button"
           onClick={() => onNavigate("about")}
           className="
-            flex
+            inline-flex
             items-center
+            justify-center
             gap-2
+            min-h-10
+            px-4
+            sm:px-5
+            py-2.5
+            rounded-md
+            text-xs
+            sm:text-sm
             border
             border-[var(--border)]
             bg-white/[0.02]
-            px-5
-            py-2.5
-            rounded-md
-            text-sm
             text-gray-200
             hover:border-gray-500
             hover:-translate-y-0.5
             transition-all
+            whitespace-nowrap
           "
         >
           <svg
@@ -289,6 +339,7 @@ export default function Home({ onNavigate }) {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            aria-hidden="true"
           >
             <circle cx="12" cy="8" r="3" />
             <path d="M5 21c0-3.5 3-6 7-6s7 2.5 7 6" />
@@ -303,20 +354,25 @@ export default function Home({ onNavigate }) {
           type="button"
           onClick={() => onNavigate("contact")}
           className="
-            flex
+            inline-flex
             items-center
+            justify-center
             gap-2
+            min-h-10
+            px-4
+            sm:px-5
+            py-2.5
+            rounded-md
+            text-xs
+            sm:text-sm
             border
             border-[var(--border)]
             bg-white/[0.02]
-            px-5
-            py-2.5
-            rounded-md
-            text-sm
             text-gray-200
             hover:border-gray-500
             hover:-translate-y-0.5
             transition-all
+            whitespace-nowrap
           "
         >
           <svg
@@ -328,8 +384,15 @@ export default function Home({ onNavigate }) {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            aria-hidden="true"
           >
-            <rect x="3" y="5" width="18" height="14" rx="2" />
+            <rect
+              x="3"
+              y="5"
+              width="18"
+              height="14"
+              rx="2"
+            />
             <path d="m3 7 9 6 9-6" />
           </svg>
 
@@ -343,28 +406,41 @@ export default function Home({ onNavigate }) {
 
       <div
         className="
-          flex
-          flex-col
-          sm:flex-row
+          grid
+          grid-cols-2
+          w-full
           border
           border-[var(--border)]
           rounded-lg
           overflow-hidden
-          divide-y
-          sm:divide-y-0
-          sm:divide-x
-          divide-[var(--border)]
           bg-gradient-to-b
           from-white/[0.03]
           to-transparent
         "
       >
-        {profile.stats.map((s) => (
-          <StatCard
+        {profile.stats.map((s, index) => (
+          <div
             key={s.label}
-            value={s.value}
-            label={s.label}
-          />
+            className={`
+              min-w-0
+              ${
+                index % 2 === 0
+                  ? "border-r"
+                  : ""
+              }
+              ${
+                index < profile.stats.length - 2
+                  ? "border-b"
+                  : ""
+              }
+              border-[var(--border)]
+            `}
+          >
+            <StatCard
+              value={s.value}
+              label={s.label}
+            />
+          </div>
         ))}
       </div>
 
@@ -372,7 +448,17 @@ export default function Home({ onNavigate }) {
           SOCIALS
       ================================================== */}
 
-      <div className="flex flex-wrap gap-3 mt-6">
+      <div
+        className="
+          flex
+          flex-wrap
+          gap-2
+          sm:gap-3
+          mt-5
+          sm:mt-6
+          pb-2
+        "
+      >
         {profile.socials.map((s) => (
           <SocialLink
             key={s.name}

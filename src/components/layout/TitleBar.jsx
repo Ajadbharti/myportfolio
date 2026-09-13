@@ -4,285 +4,201 @@ import {
   FiX,
   FiMinus,
   FiMaximize2,
+  FiMenu,
 } from "react-icons/fi";
+import { HiOutlineSparkles } from "react-icons/hi2";
 
 export default function TitleBar({
   onSearchClick,
-  onClose,
-  onMinimize,
-  onMaximize,
 }) {
-  const [isFullscreen, setIsFullscreen] =
-    useState(false);
-
-  // =========================================================
-  // CLOSE
-  // =========================================================
-
-  function handleClose() {
-    if (onClose) {
-      onClose();
-      return;
-    }
-
-    window.dispatchEvent(
-      new CustomEvent("portfolio-close")
-    );
-  }
-
-  // =========================================================
-  // MINIMIZE
-  // =========================================================
-
-  function handleMinimize() {
-    if (onMinimize) {
-      onMinimize();
-      return;
-    }
-
-    window.dispatchEvent(
-      new CustomEvent("portfolio-minimize")
-    );
-  }
-
-  // =========================================================
-  // MAXIMIZE / FULLSCREEN
-  // =========================================================
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   async function handleMaximize() {
     try {
       if (!document.fullscreenElement) {
         await document.documentElement.requestFullscreen();
         setIsFullscreen(true);
-
-        if (onMaximize) {
-          onMaximize(true);
-        }
       } else {
         await document.exitFullscreen();
         setIsFullscreen(false);
-
-        if (onMaximize) {
-          onMaximize(false);
-        }
       }
     } catch (error) {
-      console.error(
-        "Fullscreen error:",
-        error
-      );
+      console.error("Fullscreen error:", error);
     }
   }
 
+  function handleClose() {
+    window.dispatchEvent(
+      new CustomEvent("portfolio-close")
+    );
+  }
+
+  function handleMinimize() {
+    window.dispatchEvent(
+      new CustomEvent("portfolio-minimize")
+    );
+  }
+
   return (
-    <header
+    <div
       className="
-        portfolio-titlebar
         h-9
         min-h-9
-        w-full
-        flex
-        items-center
-        gap-2
-        px-4
         bg-[var(--panel)]
         border-b
         border-[var(--border)]
         select-none
-        overflow-hidden
       "
     >
-      {/* =====================================================
-          WINDOW CONTROLS
-      ====================================================== */}
+      {/* ================= DESKTOP ================= */}
 
-      <div
-        className="
-          flex
-          items-center
-          gap-2
-          w-24
-          min-w-24
-          shrink-0
-        "
-      >
-        {/* Close */}
-        <button
-          type="button"
-          onClick={handleClose}
-          title="Close"
-          aria-label="Close"
-          className="
-            group
-            w-3.5
-            h-3.5
-            rounded-full
-            bg-[#ff5f56]
-            flex
-            items-center
-            justify-center
-            hover:brightness-110
-            transition-all
-            cursor-pointer
-          "
-        >
-          <FiX
-            size={8}
-            strokeWidth={3}
+      <div className="hidden md:flex h-full items-center px-4">
+        <div className="flex items-center gap-2 w-24 shrink-0">
+          <button
+            type="button"
+            onClick={handleClose}
+            title="Close"
+            className="w-3 h-3 rounded-full bg-red-500 hover:bg-red-400"
+          />
+
+          <button
+            type="button"
+            onClick={handleMinimize}
+            title="Minimize"
+            className="w-3 h-3 rounded-full bg-yellow-400 hover:bg-yellow-300"
+          />
+
+          <button
+            type="button"
+            onClick={handleMaximize}
+            title="Fullscreen"
+            className="w-3 h-3 rounded-full bg-green-500 hover:bg-green-400"
+          />
+        </div>
+
+        <div className="flex-1 flex justify-center">
+          <button
+            type="button"
+            onClick={onSearchClick}
             className="
-              opacity-0
-              group-hover:opacity-100
-              text-[#7a1712]
-              transition-opacity
+              flex
+              items-center
+              gap-2
+              bg-[var(--bg)]
+              border
+              border-[var(--border)]
+              rounded-md
+              px-3
+              py-1
+              text-xs
+              text-gray-400
+              w-[280px]
+              justify-center
+              hover:border-gray-600
             "
-          />
-        </button>
+          >
+            <FiSearch
+              size={13}
+              className="text-gray-500"
+            />
 
-        {/* Minimize */}
-        <button
-          type="button"
-          onClick={handleMinimize}
-          title="Minimize"
-          aria-label="Minimize"
-          className="
-            group
-            w-3.5
-            h-3.5
-            rounded-full
-            bg-[#ffbd2e]
-            flex
-            items-center
-            justify-center
-            hover:brightness-110
-            transition-all
-            cursor-pointer
-          "
-        >
-          <FiMinus
-            size={8}
-            strokeWidth={3}
-            className="
-              opacity-0
-              group-hover:opacity-100
-              text-[#795b00]
-              transition-opacity
-            "
-          />
-        </button>
-
-        {/* Maximize */}
-        <button
-          type="button"
-          onClick={handleMaximize}
-          title={
-            isFullscreen
-              ? "Restore"
-              : "Maximize"
-          }
-          aria-label={
-            isFullscreen
-              ? "Restore"
-              : "Maximize"
-          }
-          className="
-            group
-            w-3.5
-            h-3.5
-            rounded-full
-            bg-[#27c93f]
-            flex
-            items-center
-            justify-center
-            hover:brightness-110
-            transition-all
-            cursor-pointer
-          "
-        >
-          <FiMaximize2
-            size={8}
-            strokeWidth={3}
-            className="
-              opacity-0
-              group-hover:opacity-100
-              text-[#075c16]
-              transition-opacity
-            "
-          />
-        </button>
-      </div>
-
-      {/* =====================================================
-          SEARCH
-      ====================================================== */}
-
-      <div
-        className="
-          flex-1
-          min-w-0
-          flex
-          justify-center
-        "
-      >
-        <button
-          type="button"
-          onClick={onSearchClick}
-          className="
-            flex
-            items-center
-            gap-2
-            bg-[var(--bg)]
-            border
-            border-[var(--border)]
-            rounded-md
-            px-3
-            py-1
-            text-xs
-            text-gray-400
-            w-[280px]
-            max-w-full
-            sm:max-w-[45vw]
-            shrink-0
-            justify-center
-            hover:border-gray-600
-            transition-colors
-          "
-        >
-          <FiSearch
-            size={13}
-            className="text-gray-500 shrink-0"
-          />
-
-          <span className="truncate">
-            <span className="hidden xs:inline">
+            <span>
               ajad-bharti{" "}
               <span className="text-gray-600">
                 :
               </span>{" "}
+              portfolio
             </span>
-            portfolio
-          </span>
 
-          <kbd
-            className="
-              hidden
-              sm:inline-block
-              ml-1
-              text-[10px]
-              bg-[var(--border)]
-              px-1.5
-              py-0.5
-              rounded
-              text-gray-300
-              shrink-0
-            "
-          >
-            Ctrl P
-          </kbd>
-        </button>
+            <kbd className="ml-2 text-[10px] bg-[var(--border)] px-1.5 py-0.5 rounded text-gray-300">
+              Ctrl P
+            </kbd>
+          </button>
+        </div>
+
+        <div className="w-24 shrink-0" />
       </div>
 
-      {/* Right spacer */}
-      <div className="w-24 min-w-24 shrink-0 hidden sm:block" />
-    </header>
+      {/* ================= MOBILE ================= */}
+
+      <div className="flex md:hidden h-full items-center px-3 gap-3">
+        <button
+          type="button"
+          onClick={() => {
+            window.dispatchEvent(
+              new CustomEvent("mobile-explorer")
+            );
+          }}
+          aria-label="Explorer"
+          className="
+            text-gray-400
+            hover:text-gray-200
+            shrink-0
+          "
+        >
+          <FiMenu size={19} />
+        </button>
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-gray-500">
+              ~/
+            </span>
+
+            <span className="text-gray-300 truncate">
+              home
+            </span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            window.dispatchEvent(
+              new CustomEvent("mobile-copilot")
+            );
+          }}
+          aria-label="Copilot"
+          className="
+            w-8
+            h-8
+            rounded
+            bg-white/5
+            border
+            border-[var(--border)]
+            flex
+            items-center
+            justify-center
+            text-gray-300
+            hover:text-[var(--accent)]
+            shrink-0
+          "
+        >
+          <HiOutlineSparkles size={17} />
+        </button>
+
+        <button
+          type="button"
+          onClick={onSearchClick}
+          aria-label="Search"
+          className="
+            w-8
+            h-8
+            rounded
+            bg-white/5
+            border
+            border-[var(--border)]
+            flex
+            items-center
+            justify-center
+            text-gray-400
+            hover:text-gray-200
+            shrink-0
+          "
+        >
+          <FiSearch size={16} />
+        </button>
+      </div>
+    </div>
   );
 }

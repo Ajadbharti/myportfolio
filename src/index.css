@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =========================================================
+   BASE
+========================================================= */
+
 html {
   scroll-behavior: smooth;
 
@@ -13,26 +17,31 @@ html {
   --accent-2: #f472b6;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html,
 body,
 #root {
   width: 100%;
-  max-width: 100%;
+  height: 100%;
+  min-width: 0;
   margin: 0;
-  padding: 0;
-}
-
-html,
-body {
-  min-height: 100%;
 }
 
 body {
   background-color: var(--bg);
   color: #e6edf3;
+
   font-family: "JetBrains Mono", monospace;
+
   -webkit-font-smoothing: antialiased;
+
   transition: background-color 300ms ease;
+
   overflow: hidden;
 }
 
@@ -43,18 +52,13 @@ select {
   font: inherit;
 }
 
-button,
-a {
-  -webkit-tap-highlight-color: transparent;
-}
-
 ::selection {
   background: #58a6ff55;
 }
 
 /* =========================================================
    SCROLLBAR
-   ========================================================= */
+========================================================= */
 
 ::-webkit-scrollbar {
   width: 10px;
@@ -76,7 +80,7 @@ a {
 
 /* =========================================================
    FONTS
-   ========================================================= */
+========================================================= */
 
 .font-display {
   font-family:
@@ -88,11 +92,11 @@ a {
 }
 
 /* =========================================================
-   ROOT
-   ========================================================= */
+   ROOT BACKGROUND
+========================================================= */
 
 #root {
-  min-height: 100dvh;
+  min-height: 100vh;
 
   background:
     radial-gradient(
@@ -116,70 +120,8 @@ a {
 }
 
 /* =========================================================
-   APP / WORKSPACE
-   ========================================================= */
-
-.portfolio-app {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-}
-
-.portfolio-workspace {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-}
-
-.portfolio-editor {
-  min-width: 0;
-  max-width: 100%;
-}
-
-.portfolio-editor-scroll {
-  min-width: 0;
-  max-width: 100%;
-}
-
-.portfolio-editor-content {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-}
-
-/* =========================================================
-   TITLE BAR
-   ========================================================= */
-
-.portfolio-titlebar {
-  width: 100%;
-  max-width: 100%;
-  flex-shrink: 0;
-}
-
-/* =========================================================
-   SIDEBAR
-   ========================================================= */
-
-.portfolio-sidebar {
-  overflow: hidden;
-}
-
-/* =========================================================
-   TAB BAR
-   ========================================================= */
-
-.portfolio-editor .overflow-x-auto {
-  scrollbar-width: none;
-}
-
-.portfolio-editor .overflow-x-auto::-webkit-scrollbar {
-  display: none;
-}
-
-/* =========================================================
-   CTA
-   ========================================================= */
+   COMMON
+========================================================= */
 
 .btn-glow {
   box-shadow:
@@ -190,10 +132,6 @@ a {
       transparent
     );
 }
-
-/* =========================================================
-   CARDS
-   ========================================================= */
 
 .card-lift {
   transition:
@@ -210,197 +148,284 @@ a {
     rgba(0, 0, 0, 0.6);
 }
 
-/* =========================================================
-   SKILL BAR
-   ========================================================= */
-
 .skill-fill {
   transition:
-    width 900ms cubic-bezier(
-      0.16,
-      1,
-      0.3,
-      1
-    );
+    width 900ms
+    cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* =========================================================
-   TABLET
-   ========================================================= */
+   PORTFOLIO APP
+========================================================= */
 
-@media (max-width: 900px) {
+.portfolio-app {
+  width: 100%;
+  max-width: 100vw;
+  min-width: 0;
+  height: 100dvh;
+
+  overflow: hidden;
+
+  background: var(--bg);
+}
+
+/* =========================================================
+   WORKSPACE
+========================================================= */
+
+.portfolio-workspace {
+  position: relative;
+
+  display: flex;
+
+  flex: 1 1 auto;
+
+  width: 100%;
+  max-width: 100vw;
+
+  min-width: 0;
+  min-height: 0;
+
+  overflow: hidden;
+}
+
+/* =========================================================
+   EDITOR
+========================================================= */
+
+.portfolio-editor {
+  flex: 1 1 0%;
+
+  width: 100%;
+  max-width: 100%;
+
+  min-width: 0;
+  min-height: 0;
+
+  overflow: hidden;
+}
+
+.portfolio-editor-scroll {
+  width: 100%;
+  max-width: 100%;
+
+  min-width: 0;
+  min-height: 0;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.portfolio-editor-content {
+  width: 100%;
+  max-width: 100%;
+
+  min-width: 0;
+
+  overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   TITLE BAR
+========================================================= */
+
+.portfolio-titlebar {
+  width: 100%;
+
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.portfolio-sidebar {
+  width: 240px;
+  min-width: 240px;
+  max-width: 240px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  min-height: 0;
+
+  background: var(--sidebar);
+
+  border-right: 1px solid var(--border);
+
+  overflow: hidden;
+
+  z-index: 40;
+}
+
+/* =========================================================
+   DESKTOP
+========================================================= */
+
+@media (min-width: 768px) {
   .portfolio-sidebar {
-    width: 210px;
-    min-width: 210px;
+    position: relative;
   }
 
-  .portfolio-editor-content
-    .max-w-4xl,
-  .portfolio-editor-content
-    .max-w-5xl,
-  .portfolio-editor-content
-    .max-w-6xl {
-    max-width: 100%;
-  }
-
-  .portfolio-editor-content
-    .text-8xl {
-    font-size: 5rem;
-  }
-
-  .portfolio-editor-content
-    .text-7xl {
-    font-size: 4.5rem;
-  }
-
-  .portfolio-editor-content
-    .text-6xl {
-    font-size: 4rem;
+  .portfolio-sidebar-backdrop,
+  .portfolio-panel-backdrop {
+    display: none;
   }
 }
 
 /* =========================================================
    MOBILE
-   ========================================================= */
+========================================================= */
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   /* -----------------------------------------
-     APP
-     ----------------------------------------- */
-
-  .portfolio-app {
-    height: 100dvh;
-    min-height: 100dvh;
-  }
+     Workspace
+  ----------------------------------------- */
 
   .portfolio-workspace {
-    position: relative;
-    overflow: hidden;
+    width: 100%;
+    max-width: 100vw;
   }
 
   /* -----------------------------------------
-     TITLE BAR
-     ----------------------------------------- */
+     Activity bar
+  ----------------------------------------- */
 
-  .portfolio-titlebar {
-    height: 36px;
-    min-height: 36px;
-    padding-left: 10px;
-    padding-right: 10px;
-    gap: 6px;
-  }
+  .portfolio-workspace > .w-12 {
+    width: 44px !important;
+    min-width: 44px !important;
+    max-width: 44px !important;
 
-  .portfolio-titlebar
-    > div:first-child {
-    width: 58px;
-    min-width: 58px;
-    gap: 5px;
-  }
-
-  .portfolio-titlebar
-    > div:first-child
-    button {
-    width: 11px;
-    height: 11px;
+    flex: 0 0 44px !important;
   }
 
   /* -----------------------------------------
-     MOBILE MENU
-     ----------------------------------------- */
+     Editor
+  ----------------------------------------- */
 
-  .portfolio-app
-    > .hidden {
-    display: none;
+  .portfolio-editor {
+    width: calc(100% - 44px);
+    max-width: calc(100% - 44px);
+
+    min-width: 0;
+
+    flex: 1 1 0%;
   }
 
   /* -----------------------------------------
-     ACTIVITY BAR
-     ----------------------------------------- */
-
-  .portfolio-workspace
-    > .flex {
-    min-width: 42px;
-  }
-
-  /* -----------------------------------------
-     SIDEBAR
-     ----------------------------------------- */
+     Sidebar drawer
+  ----------------------------------------- */
 
   .portfolio-sidebar {
     position: absolute;
 
-    z-index: 50;
-
-    left: 42px;
     top: 0;
+    left: 44px;
     bottom: 0;
 
-    width: min(
-      82vw,
-      280px
-    );
-
+    width: min(78vw, 300px);
+    max-width: calc(100vw - 44px);
     min-width: 0;
 
-    max-width:
-      calc(100vw - 42px);
+    z-index: 120;
+
+    background: var(--sidebar);
+
+    border-right: 1px solid var(--border);
 
     box-shadow:
-      18px 0 45px
-      rgba(0, 0, 0, 0.5);
+      16px 0 40px
+      rgba(0, 0, 0, 0.55);
+
+    animation:
+      portfolioDrawerIn
+      180ms
+      ease-out;
   }
 
   /* -----------------------------------------
-     SEARCH / EXTENSIONS
-     ----------------------------------------- */
+     Backdrop
+  ----------------------------------------- */
 
-  .portfolio-workspace
-    [data-panel="search"],
-  .portfolio-workspace
-    [data-panel="extensions"] {
+  .portfolio-sidebar-backdrop,
+  .portfolio-panel-backdrop {
     position: absolute;
 
-    z-index: 50;
+    inset: 0;
 
-    left: 42px;
+    width: 100%;
+    height: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    border: 0;
+
+    background:
+      rgba(0, 0, 0, 0.62);
+
+    z-index: 110;
+  }
+
+  /* -----------------------------------------
+     Search / Extensions
+  ----------------------------------------- */
+
+  [data-panel="search"],
+  [data-panel="extensions"] {
+    position: absolute;
+
     top: 0;
+    left: 44px;
     bottom: 0;
 
-    width: min(
-      82vw,
-      280px
-    );
-
+    width: min(78vw, 300px);
+    max-width: calc(100vw - 44px);
     min-width: 0;
 
-    max-width:
-      calc(100vw - 42px);
+    z-index: 120;
 
     box-shadow:
-      18px 0 45px
-      rgba(0, 0, 0, 0.5);
+      16px 0 40px
+      rgba(0, 0, 0, 0.55);
+
+    animation:
+      portfolioDrawerIn
+      180ms
+      ease-out;
   }
 
   /* -----------------------------------------
-     EDITOR
-     ----------------------------------------- */
+     Tabs
+  ----------------------------------------- */
 
-  .portfolio-editor {
-    width:
-      calc(100% - 42px);
+  .portfolio-editor > div:first-child {
+    width: 100%;
+    max-width: 100%;
 
-    max-width:
-      calc(100% - 42px);
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    scrollbar-width: none;
+  }
+
+  .portfolio-editor > div:first-child::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* -----------------------------------------
+     Breadcrumb
+  ----------------------------------------- */
+
+  .portfolio-editor > div:nth-child(2) {
+    width: 100%;
+    max-width: 100%;
 
     min-width: 0;
-  }
 
-  /* -----------------------------------------
-     TABS
-     ----------------------------------------- */
-
-  .portfolio-editor
-    > div:first-child {
     overflow-x: auto;
     overflow-y: hidden;
 
@@ -409,248 +434,215 @@ a {
     scrollbar-width: none;
   }
 
-  .portfolio-editor
-    > div:first-child::-webkit-scrollbar {
+  .portfolio-editor > div:nth-child(2)::-webkit-scrollbar {
     display: none;
   }
 
   /* -----------------------------------------
-     BREADCRUMB
-     ----------------------------------------- */
-
-  .portfolio-editor
-    .text-xs {
-    max-width: 100%;
-
-    white-space: nowrap;
-
-    overflow-x: auto;
-
-    scrollbar-width: none;
-  }
-
-  .portfolio-editor
-    .text-xs::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* -----------------------------------------
-     PAGE CONTENT
-     ----------------------------------------- */
+     Page
+  ----------------------------------------- */
 
   .portfolio-editor-content {
     width: 100%;
     max-width: 100%;
+
     min-width: 0;
 
     overflow-x: hidden;
   }
 
-  /*
-     Remove desktop max-width restrictions
-  */
-
-  .portfolio-editor-content
-    .max-w-2xl,
-  .portfolio-editor-content
-    .max-w-3xl,
-  .portfolio-editor-content
-    .max-w-4xl,
-  .portfolio-editor-content
-    .max-w-5xl,
-  .portfolio-editor-content
-    .max-w-6xl {
-    max-width: 100%;
-  }
-
-  /*
-     Compact page padding
-  */
-
-  .portfolio-editor-content
-    > div {
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 28px;
-    padding-bottom: 32px;
-  }
-
   /* -----------------------------------------
-     HEADINGS
-     ----------------------------------------- */
+     Remove desktop max widths
+  ----------------------------------------- */
 
-  .portfolio-editor-content
-    .text-8xl {
-    font-size: 3.5rem;
-    line-height: 1;
-  }
-
-  .portfolio-editor-content
-    .text-7xl {
-    font-size: 3.25rem;
-    line-height: 1;
-  }
-
-  .portfolio-editor-content
-    .text-6xl {
-    font-size: 3rem;
-    line-height: 1.05;
-  }
-
-  .portfolio-editor-content
-    .text-5xl {
-    font-size: 2.5rem;
-    line-height: 1.05;
-  }
-
-  /* -----------------------------------------
-     COMMON SPACING
-     ----------------------------------------- */
-
-  .portfolio-editor-content
-    .mb-10 {
-    margin-bottom: 1.5rem;
-  }
-
-  .portfolio-editor-content
-    .mb-8 {
-    margin-bottom: 1.5rem;
-  }
-
-  .portfolio-editor-content
-    .mb-6 {
-    margin-bottom: 1.25rem;
-  }
-
-  .portfolio-editor-content
-    .gap-10 {
-    gap: 1.5rem;
-  }
-
-  /* -----------------------------------------
-     GRIDS
-     ----------------------------------------- */
-
-  .portfolio-editor-content
-    .grid {
-    grid-template-columns:
-      minmax(0, 1fr);
-  }
-
-  /* -----------------------------------------
-     CARDS
-     ----------------------------------------- */
-
-  .portfolio-editor-content
-    .card-lift {
-    width: 100%;
+  .portfolio-editor-content .max-w-7xl,
+  .portfolio-editor-content .max-w-6xl,
+  .portfolio-editor-content .max-w-5xl,
+  .portfolio-editor-content .max-w-4xl,
+  .portfolio-editor-content .max-w-3xl,
+  .portfolio-editor-content .max-w-2xl {
     max-width: 100%;
   }
 
   /* -----------------------------------------
-     BUTTONS
-     ----------------------------------------- */
+     Remove desktop centering
+  ----------------------------------------- */
 
-  .portfolio-editor-content
-    button {
-    max-width: 100%;
+  .portfolio-editor-content .mx-auto {
+    margin-left: 0;
+    margin-right: 0;
   }
 
   /* -----------------------------------------
-     FORMS
-     ----------------------------------------- */
+     Horizontal spacing
+  ----------------------------------------- */
 
-  .portfolio-editor-content
-    input,
-  .portfolio-editor-content
-    textarea,
-  .portfolio-editor-content
-    select {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-  }
-
-  /* -----------------------------------------
-     TEXT
-     ----------------------------------------- */
-
-  .portfolio-editor-content
-    p,
-  .portfolio-editor-content
-    span,
-  .portfolio-editor-content
-    li {
-    overflow-wrap: anywhere;
-  }
-
-  /* -----------------------------------------
-     STATUS BAR
-     ----------------------------------------- */
-
-  .portfolio-app
-    > div:last-child {
-    height: 24px;
-    min-height: 24px;
-    padding-left: 8px;
-    padding-right: 8px;
-  }
-}
-
-/* =========================================================
-   SMALL MOBILE
-   ========================================================= */
-
-@media (max-width: 400px) {
-  .portfolio-titlebar
-    > div:first-child {
-    width: 52px;
-    min-width: 52px;
-  }
-
-  .portfolio-editor {
-    width:
-      calc(100% - 42px);
-  }
-
-  .portfolio-editor-content
-    > div {
+  .portfolio-editor-content .px-12,
+  .portfolio-editor-content .px-10,
+  .portfolio-editor-content .px-8,
+  .portfolio-editor-content .px-6 {
     padding-left: 16px;
     padding-right: 16px;
   }
 
-  .portfolio-editor-content
-    .text-8xl {
-    font-size: 2.8rem;
+  /* -----------------------------------------
+     Vertical spacing
+  ----------------------------------------- */
+
+  .portfolio-editor-content .py-16 {
+    padding-top: 28px;
+    padding-bottom: 28px;
   }
 
-  .portfolio-editor-content
-    .text-7xl {
-    font-size: 2.65rem;
+  .portfolio-editor-content .py-12 {
+    padding-top: 24px;
+    padding-bottom: 24px;
   }
 
-  .portfolio-editor-content
-    .text-6xl {
-    font-size: 2.45rem;
+  .portfolio-editor-content .py-10 {
+    padding-top: 22px;
+    padding-bottom: 22px;
   }
 
-  .portfolio-editor-content
-    .text-5xl {
+  /* -----------------------------------------
+     Typography
+  ----------------------------------------- */
+
+  .portfolio-editor-content .text-8xl {
+    font-size: 4rem;
+  }
+
+  .portfolio-editor-content .text-7xl {
+    font-size: 3rem;
+    line-height: 1;
+  }
+
+  .portfolio-editor-content .text-6xl {
+    font-size: 2.7rem;
+    line-height: 1;
+  }
+
+  .portfolio-editor-content .text-5xl {
     font-size: 2.25rem;
+    line-height: 1.05;
+  }
+
+  .portfolio-editor-content .text-4xl {
+    font-size: 1.9rem;
+    line-height: 1.1;
+  }
+
+  /* -----------------------------------------
+     Grids
+  ----------------------------------------- */
+
+  .portfolio-editor-content .grid-cols-4 {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .portfolio-editor-content .grid-cols-3 {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .portfolio-editor-content .grid-cols-2 {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  /* -----------------------------------------
+     Images
+  ----------------------------------------- */
+
+  .portfolio-editor-content img,
+  .portfolio-editor-content video,
+  .portfolio-editor-content iframe {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* -----------------------------------------
+     Code
+  ----------------------------------------- */
+
+  .portfolio-editor-content pre {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  /* -----------------------------------------
+     Tables
+  ----------------------------------------- */
+
+  .portfolio-editor-content table {
+    display: block;
+
+    width: 100%;
+    max-width: 100%;
+
+    overflow-x: auto;
   }
 }
 
 /* =========================================================
-   TOUCH DEVICES
-   ========================================================= */
+   SMALL PHONE
+========================================================= */
 
-@media (pointer: coarse) {
-  button,
-  a {
-    touch-action: manipulation;
+@media (max-width: 480px) {
+  .portfolio-sidebar {
+    left: 44px;
+
+    width: calc(100vw - 44px);
+    max-width: calc(100vw - 44px);
   }
 
-  .card-lift:hover {
-    transform: none;
+  [data-panel="search"],
+  [data-panel="extensions"] {
+    left: 44px;
+
+    width: calc(100vw - 44px);
+    max-width: calc(100vw - 44px);
+  }
+
+  .portfolio-editor {
+    width: calc(100% - 44px);
+    max-width: calc(100% - 44px);
+  }
+
+  .portfolio-editor-content {
+    font-size: 0.94rem;
+  }
+
+  .portfolio-editor-content .text-8xl {
+    font-size: 3.2rem;
+  }
+
+  .portfolio-editor-content .text-7xl {
+    font-size: 2.7rem;
+  }
+
+  .portfolio-editor-content .text-6xl {
+    font-size: 2.4rem;
+  }
+
+  .portfolio-editor-content .text-5xl {
+    font-size: 2rem;
+  }
+}
+
+/* =========================================================
+   DRAWER ANIMATION
+========================================================= */
+
+@keyframes portfolioDrawerIn {
+  from {
+    opacity: 0;
+    transform: translateX(-18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }

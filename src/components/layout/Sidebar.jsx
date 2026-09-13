@@ -1,5 +1,5 @@
-import React from "react";
-import { FiGitBranch } from "react-icons/fi";
+import React, { useEffect } from "react";
+import { FiGitBranch, FiX, FiSettings } from "react-icons/fi";
 import { HiOutlineSparkles } from "react-icons/hi2";
 import { files, resumeFile } from "../../data/files";
 import FileIcon from "../common/FileIcon";
@@ -9,28 +9,54 @@ export default function Sidebar({
   onOpenFile,
   onOpenCopilot,
 }) {
+  useEffect(() => {
+    function handleMobileExplorer() {
+      document.dispatchEvent(
+        new CustomEvent("toggle-explorer")
+      );
+    }
+
+    window.addEventListener(
+      "mobile-explorer",
+      handleMobileExplorer
+    );
+
+    return () => {
+      window.removeEventListener(
+        "mobile-explorer",
+        handleMobileExplorer
+      );
+    };
+  }, []);
+
   return (
-    <aside
-      data-panel="sidebar"
+    <div
       className="
         portfolio-sidebar
         w-[240px]
         min-w-[240px]
         shrink-0
+        min-h-0
         bg-[var(--sidebar)]
         border-r
         border-[var(--border)]
         flex
         flex-col
-        min-h-0
         overflow-hidden
       "
     >
-      {/* Header */}
+      {/* =====================================================
+          DESKTOP HEADER
+      ====================================================== */}
+
       <div
         className="
+          hidden
+          md:flex
           px-4
           py-3
+          items-center
+          justify-between
           text-[11px]
           tracking-widest
           text-gray-500
@@ -38,10 +64,85 @@ export default function Sidebar({
           shrink-0
         "
       >
-        PORTFOLIO
+        <span>PORTFOLIO</span>
       </div>
 
-      {/* Files */}
+      {/* =====================================================
+          MOBILE HEADER
+      ====================================================== */}
+
+      <div
+        className="
+          flex
+          md:hidden
+          items-center
+          justify-between
+          px-4
+          py-3
+          border-b
+          border-[var(--border)]
+          shrink-0
+        "
+      >
+        <span className="text-xs tracking-[0.2em] text-gray-400">
+          EXPLORER
+        </span>
+
+        <div className="flex items-center gap-4">
+          <FiSettings
+            size={16}
+            className="text-gray-500"
+          />
+
+          <button
+            type="button"
+            aria-label="Close Explorer"
+            onClick={() => {
+              document.dispatchEvent(
+                new CustomEvent("close-explorer")
+              );
+            }}
+            className="
+              text-gray-500
+              hover:text-gray-200
+            "
+          >
+            <FiX size={17} />
+          </button>
+        </div>
+      </div>
+
+      {/* =====================================================
+          FOLDER
+      ====================================================== */}
+
+      <div
+        className="
+          px-4
+          py-2.5
+          bg-white/[0.025]
+          border-b
+          border-[var(--border)]
+          text-[11px]
+          tracking-[0.15em]
+          text-gray-500
+          font-semibold
+          shrink-0
+        "
+      >
+        <span className="mr-2">📁</span>
+        <span className="hidden md:inline">
+          PORTFOLIO
+        </span>
+        <span className="md:hidden">
+          AJAD-BHARTI
+        </span>
+      </div>
+
+      {/* =====================================================
+          FILE LIST
+      ====================================================== */}
+
       <div
         className="
           flex-1
@@ -49,6 +150,7 @@ export default function Sidebar({
           overflow-y-auto
           overflow-x-hidden
           px-1
+          py-1
         "
       >
         {files.map((f) => (
@@ -61,9 +163,9 @@ export default function Sidebar({
               text-left
               flex
               items-center
-              gap-2
+              gap-2.5
               px-3
-              py-1.5
+              py-2
               rounded
               text-sm
               truncate
@@ -80,10 +182,13 @@ export default function Sidebar({
             <span className="truncate">
               {f.name}
             </span>
+
+            {activeFile === f.key && (
+              <span className="ml-auto w-1 h-1 rounded-full bg-[var(--accent)] shrink-0" />
+            )}
           </button>
         ))}
 
-        {/* Resume */}
         <button
           type="button"
           className="
@@ -91,9 +196,9 @@ export default function Sidebar({
             text-left
             flex
             items-center
-            gap-2
+            gap-2.5
             px-3
-            py-1.5
+            py-2
             rounded
             text-sm
             truncate
@@ -111,8 +216,11 @@ export default function Sidebar({
         </button>
       </div>
 
-      {/* Copilot */}
-      <div className="p-2 border-t border-[var(--border)] shrink-0">
+      {/* =====================================================
+          COPILOT
+      ====================================================== */}
+
+      <div className="p-3 border-t border-[var(--border)] shrink-0">
         <button
           type="button"
           onClick={onOpenCopilot}
@@ -122,7 +230,7 @@ export default function Sidebar({
             items-center
             justify-between
             px-3
-            py-2
+            py-2.5
             rounded-md
             bg-[var(--panel)]
             border
@@ -139,30 +247,30 @@ export default function Sidebar({
               text-xs
               font-medium
               text-gray-200
-              min-w-0
             "
           >
             <HiOutlineSparkles
               size={14}
-              className="text-[var(--accent)] shrink-0"
+              className="text-[var(--accent)]"
             />
 
-            <span className="truncate">
-              Ajad's Copilot
-            </span>
+            Ajad's Copilot
           </span>
 
-          <span className="text-[10px] text-gray-500 shrink-0">
+          <span className="text-[10px] text-gray-500">
             AI
           </span>
         </button>
       </div>
 
-      {/* Git Status */}
+      {/* =====================================================
+          GIT
+      ====================================================== */}
+
       <div
         className="
           px-3
-          py-2
+          py-2.5
           border-t
           border-[var(--border)]
           flex
@@ -180,12 +288,11 @@ export default function Sidebar({
 
         <span className="flex items-center gap-2">
           <span>↑1</span>
-
           <span className="text-emerald-500">
             +3
           </span>
         </span>
       </div>
-    </aside>
+    </div>
   );
 }
