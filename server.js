@@ -4,6 +4,7 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+import "dotenv/config";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -44,13 +45,29 @@ opportunities as a Full Stack MERN Developer.
 CONTACT:
 - Email: azadbharti802223@gmail.com
 - GitHub: github.com/Ajadbharti
-- LinkedIn: linkedin.com/in/ajad62bharti`;
+- LinkedIn: linkedin.com/in/ajad62bharti
+- LeetCode: leetcode.com/u/ajad6299/
+- YouTube: youtube.com/@Mrajju0523
+
+HOBBIES: Ajad loves trekking and exploring mountains in his free time.
+
+ACHIEVEMENTS: Ajad has solved 300+ DSA questions across LeetCode and GeeksforGeeks (GFG).
+
+SPECIAL NOTE — only mention this if the person's message specifically contains the name
+"Prity": Prity holds a special place in Ajad's life — he calls her "Chhota Done" as a term of
+endearment, and their relationship is one of the best chapters of his life so far. If asked about
+Prity, answer warmly and briefly in 1-2 sentences, then gently steer back to portfolio topics. Do
+NOT bring this up unless "Prity" is explicitly mentioned by the person.
+
+The portfolio also has a working terminal (open with the terminal icon or Ctrl+\`) with commands
+like 'help', 'ls', 'about', 'projects', 'skills', 'contact', and 'open <file>'. Mention it if the
+person asks how else they can explore the site.`;
 
 app.post("/api/chat", async (req, res) => {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return res.status(500).json({
-      error: "ANTHROPIC_API_KEY is not set. Add it in Render > your service > Environment.",
+      error: "GEMINI_API_KEY is not set. Add it in Render > your service > Environment.",
     });
   }
 
@@ -60,28 +77,56 @@ app.post("/api/chat", async (req, res) => {
   }
 
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 300,
-        system: SYSTEM_PROMPT,
-        messages: messages.map((m) => ({ role: m.role, content: m.content })),
-      }),
-    });
+    // Google Gemini (free tier) — generateContent endpoint.
+    // Gemini uses "model" instead of "assistant" for the AI's role.
+    const contents = messages.map((m) => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }],
+    }));
+
+    // Different Google accounts have access to different model names.
+    // Try them in order until one works, instead of hard-failing on the first 404.
+    const CANDIDATE_MODELS = [
+      "gemini-3.6-flash",
+      "gemini-flash-latest",
+      "gemini-2.5-flash",
+      "gemini-2.0-flash",
+      "gemini-pro-latest",
+    ];
+
+    let response;
+    let lastErrText = "";
+
+    for (const model of CANDIDATE_MODELS) {
+      response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+            contents,
+            generationConfig: { maxOutputTokens: 600 },
+          }),
+        }
+      );
+
+      if (response.ok) break;
+
+      lastErrText = await response.text();
+      // 404 = this model name isn't available on this key; try the next one.
+      // Any other error (bad key, quota, etc.) — stop and report it.
+      if (response.status !== 404) break;
+    }
 
     if (!response.ok) {
-      const errText = await response.text();
-      return res.status(response.status).json({ error: errText });
+      return res.status(response.status).json({ error: lastErrText });
     }
 
     const data = await response.json();
-    const reply = data.content?.[0]?.text || "Sorry, I couldn't generate a response.";
+    const reply =
+      data.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "Sorry, I couldn't generate a response.";
     return res.json({ reply });
   } catch (err) {
     return res.status(500).json({ error: "Upstream request failed" });

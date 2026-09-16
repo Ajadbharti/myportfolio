@@ -41,12 +41,17 @@ export default function CopilotPanel({ onClose }) {
         body: JSON.stringify({ messages: nextMessages }),
       });
 
-      if (!res.ok) throw new Error("Request failed");
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(errData?.error || "Request failed");
+      }
       const data = await res.json();
       setMessages((m) => [...m, { role: "assistant", content: data.reply }]);
     } catch (e) {
       setError(
-        "Couldn't reach the AI backend. Have you deployed /api/chat with an API key? See README."
+        e.message?.includes("GEMINI_API_KEY")
+          ? "The AI isn't set up yet — the site owner needs to add an API key."
+          : "Couldn't reach the AI backend right now. Please try again in a moment."
       );
     } finally {
       setLoading(false);
@@ -57,7 +62,7 @@ export default function CopilotPanel({ onClose }) {
   }
 
   return (
-    <div className="w-80 sm:w-96 shrink-0 border-l border-[var(--border)] bg-[var(--panel)] flex flex-col h-full animate-fade-in">
+    <div className="fixed inset-0 z-40 md:static md:z-auto w-full md:w-96 shrink-0 border-l border-[var(--border)] bg-[var(--panel)] flex flex-col h-full animate-fade-in">
       <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]">
         <span className="flex items-center gap-2 text-sm font-medium text-gray-200">
           <HiOutlineSparkles size={15} className="text-[var(--accent)]" /> {profile.firstName}'s AI Assistant
