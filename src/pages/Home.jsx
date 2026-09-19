@@ -72,49 +72,95 @@ export default function Home({ onNavigate }) {
       "
     >
       {/* =================================================
-          HELLO
+          HELLO + NAME + PHOTO
       ================================================== */}
 
-      <p
+      <div
         className="
-          text-xs
-          sm:text-sm
-          text-emerald-400
-          font-mono
-          mb-4
-          sm:mb-5
-          leading-relaxed
-        "
-      >
-        // hello world !! Welcome to my portfolio
-      </p>
-
-      {/* =================================================
-          NAME
-      ================================================== */}
-
-      <h1
-        className="
-          font-display
-          text-5xl
-          sm:text-6xl
-          md:text-7xl
-          lg:text-8xl
-          font-bold
-          leading-[0.9]
-          tracking-tight
+          flex
+          flex-col-reverse
+          sm:flex-row
+          sm:items-start
+          sm:justify-between
+          gap-6
+          sm:gap-8
           mb-5
           sm:mb-7
         "
       >
-        <span className="block text-gray-100">
-          {profile.firstName}
-        </span>
+        <div className="min-w-0 flex-1">
+          <p
+            className="
+              text-xs
+              sm:text-sm
+              text-emerald-400
+              font-mono
+              mb-4
+              sm:mb-5
+              leading-relaxed
+            "
+          >
+            // hello world !! Welcome to my portfolio
+          </p>
 
-        <span className="block text-[var(--accent-2)]">
-          {profile.lastName}
-        </span>
-      </h1>
+          <h1
+            className="
+              font-display
+              text-5xl
+              sm:text-6xl
+              md:text-7xl
+              lg:text-8xl
+              font-bold
+              leading-[0.9]
+              tracking-tight
+            "
+          >
+            <span className="block text-gray-100">
+              {profile.firstName}
+            </span>
+
+            <span className="block text-[var(--accent-2)]">
+              {profile.lastName}
+            </span>
+          </h1>
+        </div>
+
+        {/* Profile photo — put your image at public/profile.png */}
+        <div
+          className="
+            shrink-0
+            self-center
+            sm:self-start
+            w-36
+            h-36
+            sm:w-44
+            sm:h-44
+            md:w-52
+            md:h-52
+            rounded-full
+            p-1
+            bg-gradient-to-br
+            from-[var(--accent)]
+            to-[var(--accent-2)]
+          "
+        >
+          <img
+            src="/profile.png"
+            alt={profile.name}
+            className="
+              w-full
+              h-full
+              rounded-full
+              object-cover
+              object-top
+              bg-[var(--panel)]
+            "
+            onError={(e) => {
+              e.currentTarget.parentElement.style.display = "none";
+            }}
+          />
+        </div>
+      </div>
 
       {/* =================================================
           BADGES
