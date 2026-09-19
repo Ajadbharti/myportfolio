@@ -670,18 +670,16 @@ body,
   left: 0;
   top: 0;
 
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
 
-  border: 1px solid rgba(139, 92, 246, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.85);
 
   border-radius: 2px;
 
-  background: rgba(139, 92, 246, 0.025);
+  background: transparent;
 
-  box-shadow:
-    0 0 8px rgba(139, 92, 246, 0.18),
-    inset 0 0 8px rgba(139, 92, 246, 0.04);
+  box-shadow: none;
 
   pointer-events: none;
 
@@ -697,6 +695,31 @@ body,
     box-shadow 180ms ease;
 }
 
+.portfolio-cursor-ring::before,
+.portfolio-cursor-ring::after {
+  content: "";
+  position: absolute;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* top tick */
+.portfolio-cursor-ring::before {
+  top: -16px;
+  left: 50%;
+  width: 1px;
+  height: 12px;
+  transform: translateX(-50%);
+}
+
+/* left tick */
+.portfolio-cursor-ring::after {
+  left: -16px;
+  top: 50%;
+  width: 12px;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
 /* =========================================================
    CENTER SQUARE
 ========================================================= */
@@ -707,16 +730,14 @@ body,
   left: 0;
   top: 0;
 
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 
-  background: #a78bfa;
+  background: #ffffff;
 
   border-radius: 1px;
 
-  box-shadow:
-    0 0 5px rgba(167, 139, 250, 0.95),
-    0 0 12px rgba(139, 92, 246, 0.7);
+  box-shadow: none;
 
   pointer-events: none;
 
@@ -736,27 +757,23 @@ body,
 ========================================================= */
 
 .portfolio-cursor-ring.is-hovering {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
 
-  border-color: rgba(167, 139, 250, 0.95);
+  border-color: rgba(255, 255, 255, 1);
 
-  background: rgba(139, 92, 246, 0.055);
+  background: transparent;
 
-  box-shadow:
-    0 0 16px rgba(139, 92, 246, 0.28),
-    inset 0 0 10px rgba(139, 92, 246, 0.05);
+  box-shadow: none;
 }
 
 .portfolio-cursor-dot.is-hovering {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
 
-  background: #c4b5fd;
+  background: #ffffff;
 
-  box-shadow:
-    0 0 7px rgba(196, 181, 253, 1),
-    0 0 15px rgba(139, 92, 246, 0.8);
+  box-shadow: none;
 }
 
 /* =========================================================
@@ -767,23 +784,20 @@ body,
   width: 23px;
   height: 23px;
 
-  border-color: rgba(244, 114, 182, 0.95);
+  border-color: rgba(255, 255, 255, 0.9);
 
-  background: rgba(244, 114, 182, 0.07);
+  background: rgba(255, 255, 255, 0.06);
 
-  box-shadow:
-    0 0 20px rgba(244, 114, 182, 0.3);
+  box-shadow: none;
 }
 
 .portfolio-cursor-dot.is-clicking {
   width: 7px;
   height: 7px;
 
-  background: #f9a8d4;
+  background: #ffffff;
 
-  box-shadow:
-    0 0 8px rgba(249, 168, 212, 1),
-    0 0 16px rgba(244, 114, 182, 0.7);
+  box-shadow: none;
 }
 
 /* =========================================================

@@ -128,20 +128,27 @@ export default function Home({ onNavigate }) {
         {/* Profile photo — put your image at public/profile.png */}
         <div
           className="
+            group
+            relative
             shrink-0
             self-center
             sm:self-start
             w-36
-            h-36
-            sm:w-44
-            sm:h-44
-            md:w-52
-            md:h-52
-            rounded-full
-            p-1
-            bg-gradient-to-br
-            from-[var(--accent)]
-            to-[var(--accent-2)]
+            h-44
+            sm:w-48
+            sm:h-64
+            md:w-56
+            md:h-72
+            sm:-translate-x-12
+            md:-translate-x-16
+            mr-2
+            sm:mr-4
+            md:mr-6
+            rounded-2xl
+            overflow-hidden
+            border
+            border-[var(--border)]
+            cursor-pointer
           "
         >
           <img
@@ -150,15 +157,135 @@ export default function Home({ onNavigate }) {
             className="
               w-full
               h-full
-              rounded-full
               object-cover
               object-top
               bg-[var(--panel)]
+              grayscale
+              contrast-125
+              transition-transform
+              duration-500
+              group-hover:scale-110
             "
             onError={(e) => {
               e.currentTarget.parentElement.style.display = "none";
             }}
           />
+
+          {/* Cyan duotone tint — appears on hover */}
+          <div
+            className="
+              absolute
+              inset-0
+              bg-cyan-400
+              mix-blend-color
+              opacity-0
+              group-hover:opacity-60
+              transition-opacity
+              duration-400
+            "
+          />
+
+          {/* Subtle dark vignette so the floating tags stay readable */}
+          <div
+            className="
+              absolute
+              inset-0
+              bg-gradient-to-t
+              from-black/50
+              via-transparent
+              to-black/20
+              opacity-0
+              group-hover:opacity-100
+              transition-opacity
+              duration-400
+            "
+          />
+
+          {/* Glowing connector dot */}
+          <span
+            className="
+              absolute
+              left-[38%]
+              top-[58%]
+              w-2.5
+              h-2.5
+              rounded-full
+              bg-cyan-300
+              opacity-0
+              scale-0
+              group-hover:opacity-100
+              group-hover:scale-100
+              transition-all
+              duration-500
+              shadow-[0_0_10px_3px_rgba(34,211,238,0.7)]
+            "
+          />
+
+          {/* Floating terminal tag — top right */}
+          <div
+            className="
+              absolute
+              top-3
+              right-3
+              flex
+              items-center
+              gap-1.5
+              px-2.5
+              py-1
+              rounded-full
+              bg-black/70
+              border
+              border-cyan-400/40
+              backdrop-blur-sm
+              text-[10px]
+              sm:text-[11px]
+              font-mono
+              text-cyan-300
+              opacity-0
+              -translate-y-2
+              group-hover:opacity-100
+              group-hover:translate-y-0
+              transition-all
+              duration-400
+              delay-75
+              whitespace-nowrap
+            "
+          >
+            <span className="text-cyan-400">{">"}</span> npm run dev
+          </div>
+
+          {/* Floating terminal tag — bottom left */}
+          <div
+            className="
+              absolute
+              bottom-3
+              left-3
+              flex
+              items-center
+              gap-1.5
+              px-2.5
+              py-1
+              rounded-full
+              bg-black/70
+              border
+              border-cyan-400/40
+              backdrop-blur-sm
+              text-[10px]
+              sm:text-[11px]
+              font-mono
+              text-cyan-300
+              opacity-0
+              translate-y-2
+              group-hover:opacity-100
+              group-hover:translate-y-0
+              transition-all
+              duration-400
+              delay-150
+              whitespace-nowrap
+            "
+          >
+            <span className="text-cyan-400">{">"}</span> const dev = true
+          </div>
         </div>
       </div>
 
