@@ -1,5 +1,5 @@
 import React from "react";
-import { skillCategories } from "../data/skills";
+import { skillCategories, alsoFamiliarWith } from "../data/skills";
 
 export default function Skills() {
   return (
@@ -48,10 +48,10 @@ export default function Skills() {
       <div className="grid sm:grid-cols-2 gap-x-10 lg:gap-x-12 gap-y-8 sm:gap-y-10">
         {skillCategories.map((cat) => (
           <div key={cat.title}>
-            <h2 className="text-xs tracking-widest text-gray-400 font-bold mb-4 sm:mb-5">
+            <h2 className="text-xs tracking-widest text-amber-400/90 font-bold mb-3 pb-2 border-b border-[var(--border)]">
               {cat.title.toUpperCase()}
             </h2>
-            <div className="space-y-4">
+            <div className="space-y-4 mt-4">
               {cat.skills.map((s) => (
                 <SkillRow key={s.name} name={s.name} level={s.level} color={cat.color} />
               ))}
@@ -59,6 +59,28 @@ export default function Skills() {
           </div>
         ))}
       </div>
+
+      {/* =================================================
+          ALSO FAMILIAR WITH
+      ================================================== */}
+
+      {alsoFamiliarWith?.length > 0 && (
+        <div className="mt-10 sm:mt-12">
+          <h2 className="text-xs tracking-widest text-amber-400/90 font-bold mb-4 pb-2 border-b border-[var(--border)]">
+            ALSO FAMILIAR WITH
+          </h2>
+          <div className="flex flex-wrap gap-2 mt-4">
+            {alsoFamiliarWith.map((tool) => (
+              <span
+                key={tool}
+                className="text-xs sm:text-sm px-3 py-1.5 rounded-full border border-[var(--border)] text-gray-300"
+              >
+                {tool}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

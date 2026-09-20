@@ -1,10 +1,13 @@
 import React from "react";
-import { FiActivity, FiSun, FiSliders } from "react-icons/fi";
+import { FiActivity, FiSun, FiSliders, FiMessageCircle, FiShoppingBag, FiMusic } from "react-icons/fi";
 
 const ICONS = {
   fitness: FiActivity,
   eco: FiSun,
   tools: FiSliders,
+  chat: FiMessageCircle,
+  delivery: FiShoppingBag,
+  music: FiMusic,
 };
 
 export default function ProjectCard({ project }) {

@@ -51,3 +51,11 @@ export const skillCategories = [
     ],
   },
 ];
+
+// Tools you're familiar with but don't need a progress bar for.
+export const alsoFamiliarWith = [
+  "Git",
+  "GitHub",
+  "Postman",
+  "VS Code",
+];

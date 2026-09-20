@@ -42,7 +42,7 @@ export const profile = {
 
   stats: [
     { value: "2+", label: "Years" },
-    { value: "3+", label: "Projects" },
+    { value: "6+", label: "Projects" },
     { value: "∞", label: "Curiosity" },
     { value: "↑", label: "Always Learning" },
   ],
