@@ -8,6 +8,39 @@ import {
 import { SiLeetcode } from "react-icons/si";
 import { profile } from "../data/profile";
 
+// EmailJS (free plan). Fill these 4 values from your EmailJS dashboard.
+//  - Service ID:   Email Services -> your Gmail service
+//  - Public Key:   Account -> General
+//  - Template IDs: Email Templates -> one to notify you, one auto-reply to the visitor
+const EMAILJS_SERVICE_ID = "PASTE_SERVICE_ID";
+const EMAILJS_PUBLIC_KEY = "PASTE_PUBLIC_KEY";
+const EMAILJS_NOTIFY_TEMPLATE_ID = "PASTE_NOTIFY_TEMPLATE_ID";
+const EMAILJS_REPLY_TEMPLATE_ID = "PASTE_AUTOREPLY_TEMPLATE_ID";
+
+const EMAILJS_URL = "https://api.emailjs.com/api/v1.0/email/send";
+
+function isConfigured() {
+  return ![
+    EMAILJS_SERVICE_ID,
+    EMAILJS_PUBLIC_KEY,
+    EMAILJS_NOTIFY_TEMPLATE_ID,
+    EMAILJS_REPLY_TEMPLATE_ID,
+  ].some((v) => v.startsWith("PASTE_"));
+}
+
+function sendEmailJS(templateId, templateParams) {
+  return fetch(EMAILJS_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      service_id: EMAILJS_SERVICE_ID,
+      template_id: templateId,
+      user_id: EMAILJS_PUBLIC_KEY,
+      template_params: templateParams,
+    }),
+  });
+}
+
 const LINKS = [
   {
     label: "EMAIL",
@@ -54,19 +87,51 @@ export default function Contact() {
     message: "",
   });
 
-  function handleSubmit(e) {
+  // idle | sending | success | error | not-configured
+  const [status, setStatus] = useState("idle");
+
+  async function handleSubmit(e) {
     e.preventDefault();
 
-    const body = encodeURIComponent(
-      `${form.message}\n\n— ${form.name} (${form.email})`
-    );
+    if (!isConfigured()) {
+      setStatus("not-configured");
+      return;
+    }
 
-    const subject = encodeURIComponent(
-      form.subject || "Portfolio contact"
-    );
+    setStatus("sending");
 
-    window.location.href =
-      `mailto:${profile.email}?subject=${subject}&body=${body}`;
+    const subject = form.subject.trim() || "Portfolio contact";
+
+    try {
+      // 1) Message to you. In the template, set "To Email" to your own address
+      //    and "Reply To" to {{from_email}} so you can reply directly.
+      const notify = await sendEmailJS(EMAILJS_NOTIFY_TEMPLATE_ID, {
+        from_name: form.name.trim(),
+        from_email: form.email.trim(),
+        subject,
+        message: form.message.trim(),
+      });
+
+      if (!notify.ok) throw new Error("Notification failed");
+
+      // 2) Auto-reply to the visitor. In the template, set "To Email" to {{to_email}}.
+      //    If this one fails, the message still reached you, so don't show an error.
+      try {
+        await sendEmailJS(EMAILJS_REPLY_TEMPLATE_ID, {
+          to_name: form.name.trim(),
+          to_email: form.email.trim(),
+          subject,
+          message: form.message.trim(),
+        });
+      } catch {
+        /* auto-reply is best-effort */
+      }
+
+      setStatus("success");
+      setForm({ name: "", email: "", subject: "", message: "" });
+    } catch {
+      setStatus("error");
+    }
   }
 
   return (
@@ -80,9 +145,7 @@ export default function Contact() {
         animate-fade-in
       "
     >
-      {/* =================================================
-          HEADER
-      ================================================== */}
+      {/* HEADER */}
 
       <p className="text-sm text-emerald-400 font-mono mb-3">
         {"/* contact.css — let's build something */"}
@@ -101,44 +164,17 @@ export default function Contact() {
         Contact
       </h1>
 
-      <p
-        className="
-          text-sm
-          text-gray-500
-          mb-7
-          font-mono
-        "
-      >
+      <p className="text-sm text-gray-500 mb-7 font-mono">
         // open to work, collabs & good conversations
       </p>
 
-      {/* =================================================
-          MAIN CONTENT
-      ================================================== */}
+      {/* MAIN CONTENT */}
 
-      <div
-        className="
-          grid
-          md:grid-cols-2
-          gap-6
-          lg:gap-8
-          max-w-6xl
-        "
-      >
-        {/* =================================================
-            SOCIAL LINKS
-        ================================================== */}
+      <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-6xl">
+        {/* SOCIAL LINKS */}
 
         <div>
-          <h2
-            className="
-              text-xs
-              tracking-widest
-              text-emerald-400
-              font-bold
-              mb-3
-            "
-          >
+          <h2 className="text-xs tracking-widest text-emerald-400 font-bold mb-3">
             FIND ME ON
           </h2>
 
@@ -175,14 +211,7 @@ export default function Contact() {
                     />
 
                     <span className="min-w-0">
-                      <span
-                        className="
-                          block
-                          text-[11px]
-                          tracking-wider
-                          text-gray-500
-                        "
-                      >
+                      <span className="block text-[11px] tracking-wider text-gray-500">
                         {l.label}
                       </span>
 
@@ -192,15 +221,7 @@ export default function Contact() {
                     </span>
                   </span>
 
-                  <span
-                    className="
-                      text-gray-600
-                      group-hover:text-[var(--accent)]
-                      transition-colors
-                      ml-3
-                      shrink-0
-                    "
-                  >
+                  <span className="text-gray-600 group-hover:text-[var(--accent)] transition-colors ml-3 shrink-0">
                     ↗
                   </span>
                 </a>
@@ -209,37 +230,19 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* =================================================
-            CONTACT FORM
-        ================================================== */}
+        {/* CONTACT FORM */}
 
         <div>
-          <h2
-            className="
-              text-xs
-              tracking-widest
-              text-emerald-400
-              font-bold
-              mb-3
-            "
-          >
+          <h2 className="text-xs tracking-widest text-emerald-400 font-bold mb-3">
             SEND A MESSAGE
           </h2>
 
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-3"
-          >
+          <form onSubmit={handleSubmit} className="space-y-3">
             <Field
               label="YOUR_NAME"
               required
               value={form.name}
-              onChange={(v) =>
-                setForm({
-                  ...form,
-                  name: v,
-                })
-              }
+              onChange={(v) => setForm({ ...form, name: v })}
             />
 
             <Field
@@ -247,29 +250,18 @@ export default function Contact() {
               required
               type="email"
               value={form.email}
-              onChange={(v) =>
-                setForm({
-                  ...form,
-                  email: v,
-                })
-              }
+              onChange={(v) => setForm({ ...form, email: v })}
             />
 
             <Field
               label="SUBJECT"
               value={form.subject}
-              onChange={(v) =>
-                setForm({
-                  ...form,
-                  subject: v,
-                })
-              }
+              onChange={(v) => setForm({ ...form, subject: v })}
             />
 
             <div>
               <label className="text-xs text-gray-500 mb-1 block">
-                // MESSAGE{" "}
-                <span className="text-red-400">*</span>
+                // MESSAGE <span className="text-red-400">*</span>
               </label>
 
               <textarea
@@ -277,12 +269,7 @@ export default function Contact() {
                 rows={4}
                 placeholder="'''your message'''"
                 value={form.message}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    message: e.target.value,
-                  })
-                }
+                onChange={(e) => setForm({ ...form, message: e.target.value })}
                 className="
                   w-full
                   bg-[var(--panel)]
@@ -303,6 +290,7 @@ export default function Contact() {
 
             <button
               type="submit"
+              disabled={status === "sending"}
               className="
                 w-full
                 bg-[var(--accent)]
@@ -313,14 +301,36 @@ export default function Contact() {
                 text-sm
                 hover:opacity-90
                 transition-opacity
+                disabled:opacity-60
+                disabled:cursor-not-allowed
               "
             >
-              → send_message()
+              {status === "sending" ? "→ sending..." : "→ send_message()"}
             </button>
 
-            <p className="text-xs text-gray-600">
-              // opens your email client to send this message
-            </p>
+            {status === "success" && (
+              <p className="text-xs text-emerald-400">
+                // message sent — thanks! A confirmation is on its way to your inbox.
+              </p>
+            )}
+
+            {status === "error" && (
+              <p className="text-xs text-red-400">
+                // couldn't send right now — please try again, or email me directly.
+              </p>
+            )}
+
+            {status === "not-configured" && (
+              <p className="text-xs text-amber-400">
+                // form isn't connected yet — add your EmailJS keys at the top of Contact.jsx
+              </p>
+            )}
+
+            {status === "idle" && (
+              <p className="text-xs text-gray-600">
+                // your message lands directly in my inbox
+              </p>
+            )}
           </form>
         </div>
       </div>
@@ -328,20 +338,11 @@ export default function Contact() {
   );
 }
 
-function Field({
-  label,
-  value,
-  onChange,
-  type = "text",
-  required,
-}) {
+function Field({ label, value, onChange, type = "text", required }) {
   return (
     <div>
       <label className="text-xs text-gray-500 mb-1 block">
-        // {label}{" "}
-        {required && (
-          <span className="text-red-400">*</span>
-        )}
+        // {label} {required && <span className="text-red-400">*</span>}
       </label>
 
       <input
