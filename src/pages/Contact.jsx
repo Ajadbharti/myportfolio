@@ -12,10 +12,10 @@ import { profile } from "../data/profile";
 //  - Service ID:   Email Services -> your Gmail service
 //  - Public Key:   Account -> General
 //  - Template IDs: Email Templates -> one to notify you, one auto-reply to the visitor
-const EMAILJS_SERVICE_ID = "PASTE_SERVICE_ID";
-const EMAILJS_PUBLIC_KEY = "PASTE_PUBLIC_KEY";
-const EMAILJS_NOTIFY_TEMPLATE_ID = "PASTE_NOTIFY_TEMPLATE_ID";
-const EMAILJS_REPLY_TEMPLATE_ID = "PASTE_AUTOREPLY_TEMPLATE_ID";
+const EMAILJS_SERVICE_ID = "service_u8iggf8";
+const EMAILJS_PUBLIC_KEY = "6Jb5S1vhtsHENuOf0";
+const EMAILJS_NOTIFY_TEMPLATE_ID = "template_qp52pab";
+const EMAILJS_REPLY_TEMPLATE_ID = "template_vv3bs6u";
 
 const EMAILJS_URL = "https://api.emailjs.com/api/v1.0/email/send";
 
