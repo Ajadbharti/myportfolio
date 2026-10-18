@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { FiFolder, FiUser, FiMail } from "react-icons/fi";
 import { profile } from "../data/profile";
+import { home } from "../data/home";
 import StatCard from "../components/common/StatCard";
 import SocialLink from "../components/common/SocialLink";
 
@@ -13,22 +15,25 @@ const BADGE_COLORS = {
 export default function Home({ onNavigate }) {
   const [typed, setTyped] = useState("");
 
+  // Typewriter: type a line, pause, erase it, then move to the next line.
   useEffect(() => {
-    const full = profile.typingLine;
+    const lines = home.typingLines;
+    if (!lines || lines.length === 0) return undefined;
 
+    let lineIdx = 0;
     let i = 0;
     let deleting = false;
     let timeoutId;
 
     function tick() {
+      const full = lines[lineIdx];
+
       if (!deleting) {
         i++;
-
         setTyped(full.slice(0, i));
 
         if (i >= full.length) {
           deleting = true;
-
           timeoutId = setTimeout(tick, 1800);
           return;
         }
@@ -36,21 +41,20 @@ export default function Home({ onNavigate }) {
         timeoutId = setTimeout(tick, 55);
       } else {
         i--;
-
         setTyped(full.slice(0, i));
 
         if (i <= 0) {
           deleting = false;
-
-          timeoutId = setTimeout(tick, 500);
+          lineIdx = (lineIdx + 1) % lines.length;
+          timeoutId = setTimeout(tick, 400);
           return;
         }
 
-        timeoutId = setTimeout(tick, 30);
+        timeoutId = setTimeout(tick, 28);
       }
     }
 
-    timeoutId = setTimeout(tick, 55);
+    timeoutId = setTimeout(tick, 400);
 
     return () => clearTimeout(timeoutId);
   }, []);
@@ -58,16 +62,11 @@ export default function Home({ onNavigate }) {
   return (
     <div
       className="
-        home-page
         w-full
-        min-h-full
-        px-4
-        py-6
-        sm:px-6
-        sm:py-8
-        md:px-8
-        lg:px-10
-        xl:px-12
+        px-8
+        sm:px-10
+        lg:px-12
+        py-8
         animate-fade-in
       "
     >
@@ -139,8 +138,8 @@ export default function Home({ onNavigate }) {
             sm:h-64
             md:w-56
             md:h-72
-            sm:-translate-x-12
-            md:-translate-x-16
+            sm:-translate-x-16
+            md:-translate-x-24
             mr-2
             sm:mr-4
             md:mr-6
@@ -181,7 +180,7 @@ export default function Home({ onNavigate }) {
               opacity-0
               group-hover:opacity-60
               transition-opacity
-              duration-400
+              duration-300
             "
           />
 
@@ -197,7 +196,7 @@ export default function Home({ onNavigate }) {
               opacity-0
               group-hover:opacity-100
               transition-opacity
-              duration-400
+              duration-300
             "
           />
 
@@ -246,7 +245,7 @@ export default function Home({ onNavigate }) {
               group-hover:opacity-100
               group-hover:translate-y-0
               transition-all
-              duration-400
+              duration-300
               delay-75
               whitespace-nowrap
             "
@@ -279,7 +278,7 @@ export default function Home({ onNavigate }) {
               group-hover:opacity-100
               group-hover:translate-y-0
               transition-all
-              duration-400
+              duration-300
               delay-150
               whitespace-nowrap
             "
@@ -293,327 +292,93 @@ export default function Home({ onNavigate }) {
           BADGES
       ================================================== */}
 
-      <div
-        className="
-          flex
-          flex-wrap
-          gap-2
-          mb-5
-          max-w-full
-        "
-      >
-        {profile.badges.map((b) => (
+      <div className="flex flex-wrap gap-2 mb-5">
+        {home.badges.map((b) => (
           <span
             key={b.label}
             className={`
-              inline-flex
+              flex
               items-center
               gap-1.5
-              text-[11px]
-              sm:text-xs
-              px-2.5
-              sm:px-3
+              text-xs
+              px-3
               py-1.5
               rounded-full
               border
               border-[var(--border)]
-              bg-white/[0.02]
-              whitespace-nowrap
+              bg-white/[0.03]
               ${BADGE_COLORS[b.color] || "text-gray-300"}
             `}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-current shrink-0" />
-
+            <span className="w-1.5 h-1.5 rounded-full bg-current" />
             {b.label}
           </span>
         ))}
       </div>
 
       {/* =================================================
-          TYPING LINE
+          TYPEWRITER
       ================================================== */}
 
-      <p
-        className="
-          text-xs
-          sm:text-sm
-          text-gray-400
-          mb-6
-          sm:mb-8
-          min-h-5
-          font-mono
-          leading-relaxed
-          break-words
-        "
-      >
+      <p className="text-sm text-gray-400 mb-6 min-h-[1.5rem]">
         {typed}
-
-        <span
-          className="
-            inline-block
-            w-1.5
-            h-4
-            bg-[var(--accent)]
-            ml-0.5
-            align-middle
-            animate-blink
-          "
-        />
+        <span className="inline-block w-1.5 h-4 bg-[var(--accent)] ml-0.5 align-middle animate-blink" />
       </p>
 
       {/* =================================================
-          INTRO
+          INTRO (from CV)
       ================================================== */}
 
-      <p
-        className="
-          text-base
-          sm:text-lg
-          lg:text-xl
-          text-gray-300
-          leading-7
-          sm:leading-relaxed
-          mb-6
-          sm:mb-8
-          w-full
-          max-w-4xl
-        "
-      >
-        I live at the crossroads of{" "}
-        <span
-          className="
-            text-[var(--accent)]
-            font-semibold
-          "
-        >
-          frontend craft
-        </span>
-        ,{" "}
-        <span
-          className="
-            text-[var(--accent)]
-            font-semibold
-          "
-        >
-          backend systems
-        </span>
-        , and{" "}
-        <span
-          className="
-            text-[var(--accent)]
-            font-semibold
-          "
-        >
-          clean architecture
-        </span>
-        . I build systems that are genuinely{" "}
-        <span className="text-gray-100 font-semibold">
-          reliable
-        </span>{" "}
-        and{" "}
-        <span className="text-gray-100 font-semibold">
-          scalable
-        </span>
-        .
+      <p className="text-base sm:text-lg text-gray-300 leading-relaxed mb-4 max-w-3xl">
+        {home.intro.map((seg, i) =>
+          seg.h ? (
+            <span key={i} className="text-[var(--accent)] font-semibold">
+              {seg.t}
+            </span>
+          ) : (
+            <span key={i}>{seg.t}</span>
+          )
+        )}
+      </p>
+
+      <p className="text-xs sm:text-sm text-emerald-400 font-mono mb-8 leading-relaxed">
+        // currently building: {home.currentlyBuilding}
       </p>
 
       {/* =================================================
           BUTTONS
       ================================================== */}
 
-      <div
-        className="
-          flex
-          flex-wrap
-          items-center
-          gap-2.5
-          sm:gap-3
-          mb-7
-          sm:mb-8
-        "
-      >
-        {/* Projects */}
-
+      <div className="flex flex-wrap gap-3 mb-10">
         <button
-          type="button"
           onClick={() => onNavigate("projects")}
-          className="
-            inline-flex
-            items-center
-            justify-center
-            gap-2
-            min-h-10
-            px-4
-            sm:px-5
-            py-2.5
-            rounded-md
-            text-xs
-            sm:text-sm
-            bg-[var(--accent)]
-            text-black
-            font-semibold
-            hover:opacity-90
-            hover:-translate-y-0.5
-            transition-all
-            btn-glow
-            whitespace-nowrap
-          "
+          className="btn-glow flex items-center gap-2 bg-[var(--accent)] text-black font-semibold px-5 py-2.5 rounded-md text-sm hover:opacity-90 hover:-translate-y-0.5 transition-all"
         >
-          <svg
-            width="17"
-            height="17"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M3 7h6l2 2h10v10H3z" />
-          </svg>
-
-          Projects
+          <FiFolder size={15} /> Projects
         </button>
 
-        {/* About */}
-
         <button
-          type="button"
           onClick={() => onNavigate("about")}
-          className="
-            inline-flex
-            items-center
-            justify-center
-            gap-2
-            min-h-10
-            px-4
-            sm:px-5
-            py-2.5
-            rounded-md
-            text-xs
-            sm:text-sm
-            border
-            border-[var(--border)]
-            bg-white/[0.02]
-            text-gray-200
-            hover:border-gray-500
-            hover:-translate-y-0.5
-            transition-all
-            whitespace-nowrap
-          "
+          className="flex items-center gap-2 border border-[var(--border)] bg-white/[0.02] px-5 py-2.5 rounded-md text-sm text-gray-200 hover:border-gray-500 hover:-translate-y-0.5 transition-all"
         >
-          <svg
-            width="17"
-            height="17"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <circle cx="12" cy="8" r="3" />
-            <path d="M5 21c0-3.5 3-6 7-6s7 2.5 7 6" />
-          </svg>
-
-          About Me
+          <FiUser size={15} /> About Me
         </button>
 
-        {/* Contact */}
-
         <button
-          type="button"
           onClick={() => onNavigate("contact")}
-          className="
-            inline-flex
-            items-center
-            justify-center
-            gap-2
-            min-h-10
-            px-4
-            sm:px-5
-            py-2.5
-            rounded-md
-            text-xs
-            sm:text-sm
-            border
-            border-[var(--border)]
-            bg-white/[0.02]
-            text-gray-200
-            hover:border-gray-500
-            hover:-translate-y-0.5
-            transition-all
-            whitespace-nowrap
-          "
+          className="flex items-center gap-2 border border-[var(--border)] bg-white/[0.02] px-5 py-2.5 rounded-md text-sm text-gray-200 hover:border-gray-500 hover:-translate-y-0.5 transition-all"
         >
-          <svg
-            width="17"
-            height="17"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <rect
-              x="3"
-              y="5"
-              width="18"
-              height="14"
-              rx="2"
-            />
-            <path d="m3 7 9 6 9-6" />
-          </svg>
-
-          Contact
+          <FiMail size={15} /> Contact
         </button>
       </div>
 
       {/* =================================================
-          STATS
+          STATS (from CV)
       ================================================== */}
 
-      <div
-        className="
-          grid
-          grid-cols-2
-          w-full
-          border
-          border-[var(--border)]
-          rounded-lg
-          overflow-hidden
-          bg-gradient-to-b
-          from-white/[0.03]
-          to-transparent
-        "
-      >
-        {profile.stats.map((s, index) => (
-          <div
-            key={s.label}
-            className={`
-              min-w-0
-              ${
-                index % 2 === 0
-                  ? "border-r"
-                  : ""
-              }
-              ${
-                index < profile.stats.length - 2
-                  ? "border-b"
-                  : ""
-              }
-              border-[var(--border)]
-            `}
-          >
-            <StatCard
-              value={s.value}
-              label={s.label}
-            />
-          </div>
+      <div className="flex flex-col sm:flex-row border border-[var(--border)] rounded-lg overflow-hidden mb-8 divide-y sm:divide-y-0 sm:divide-x divide-[var(--border)] bg-gradient-to-b from-white/[0.03] to-transparent">
+        {home.stats.map((s) => (
+          <StatCard key={s.label} value={s.value} label={s.label} />
         ))}
       </div>
 
@@ -621,22 +386,9 @@ export default function Home({ onNavigate }) {
           SOCIALS
       ================================================== */}
 
-      <div
-        className="
-          flex
-          flex-wrap
-          gap-2
-          sm:gap-3
-          mt-5
-          sm:mt-6
-          pb-2
-        "
-      >
+      <div className="flex flex-wrap gap-3">
         {profile.socials.map((s) => (
-          <SocialLink
-            key={s.name}
-            {...s}
-          />
+          <SocialLink key={s.name} {...s} />
         ))}
       </div>
     </div>
