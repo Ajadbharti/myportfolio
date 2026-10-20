@@ -25,7 +25,7 @@ export const projects = [
     tech: ["React", "Node.js", "Express.js", "MongoDB", "JWT"],
     screenshots: [],
     github: "https://github.com/Ajadbharti/AppnaStore",
-    live: "",
+    live: "https://appna-store-omega.vercel.app/",
     icon: "store",
   },
   {
@@ -53,7 +53,7 @@ export const projects = [
     tech: ["React", "Node.js", "Express.js", "Redis"],
     screenshots: [],
     github: "https://github.com/Ajadbharti/Droply",
-    live: "",
+    live: "https://droply-liard.vercel.app/",
     icon: "tools",
   },
   {
