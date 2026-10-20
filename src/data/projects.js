@@ -39,7 +39,7 @@ export const projects = [
     tech: ["React", "JavaScript"],
     screenshots: [],
     github: "https://github.com/Ajadbharti/Huddle-",
-    live: "",
+    live: "https://huddle-frontend-n9z2.onrender.com",
     icon: "chat",
   },
   {
@@ -123,7 +123,7 @@ export const projects = [
     tech: ["JavaScript", "HTML5", "CSS3"],
     screenshots: [],
     github: "https://github.com/Ajadbharti/Fitness",
-    live: "",
+    live: "https://fitnessweb-frontend.onrender.com",
     icon: "fitness",
   },
 ];
