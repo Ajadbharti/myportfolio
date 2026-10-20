@@ -145,8 +145,13 @@ export default function Home({ onNavigate }) {
             md:mr-6
             rounded-2xl
             overflow-hidden
-            border
-            border-[var(--border)]
+            bg-[var(--panel)]
+            shadow-[0_10px_30px_-18px_rgba(0,0,0,0.8)]
+            transition-all
+            duration-500
+            ease-out
+            hover:-translate-y-1.5
+            hover:shadow-[0_28px_60px_-24px_rgba(0,0,0,0.95)]
             cursor-pointer
           "
         >
@@ -158,132 +163,168 @@ export default function Home({ onNavigate }) {
               h-full
               object-cover
               object-top
-              bg-[var(--panel)]
               grayscale
               contrast-125
               transition-transform
-              duration-500
-              group-hover:scale-110
+              duration-700
+              ease-out
+              group-hover:scale-105
             "
             onError={(e) => {
               e.currentTarget.parentElement.style.display = "none";
             }}
           />
 
-          {/* Cyan duotone tint — appears on hover */}
+          {/* Soft dark vignette: the photo's colour never changes */}
           <div
             className="
-              absolute
-              inset-0
-              bg-cyan-400
-              mix-blend-color
-              opacity-0
-              group-hover:opacity-60
-              transition-opacity
-              duration-300
-            "
-          />
-
-          {/* Subtle dark vignette so the floating tags stay readable */}
-          <div
-            className="
+              pointer-events-none
               absolute
               inset-0
               bg-gradient-to-t
-              from-black/50
+              from-black/55
               via-transparent
-              to-black/20
+              to-black/25
               opacity-0
               group-hover:opacity-100
               transition-opacity
-              duration-300
+              duration-500
             "
           />
 
-          {/* Glowing connector dot */}
-          <span
+          {/* Light sheen that sweeps across once on hover */}
+          <div
             className="
+              pointer-events-none
               absolute
-              left-[38%]
-              top-[58%]
-              w-2.5
-              h-2.5
-              rounded-full
-              bg-cyan-300
-              opacity-0
-              scale-0
-              group-hover:opacity-100
-              group-hover:scale-100
-              transition-all
-              duration-500
-              shadow-[0_0_10px_3px_rgba(34,211,238,0.7)]
+              inset-y-0
+              left-0
+              w-1/3
+              -translate-x-full
+              -skew-x-12
+              bg-gradient-to-r
+              from-transparent
+              via-white/15
+              to-transparent
+              transition-none
+              group-hover:translate-x-[400%]
+              group-hover:transition-transform
+              group-hover:duration-1000
+              group-hover:ease-out
             "
           />
+
+          {/* Glass edge */}
+          <div
+            className="
+              pointer-events-none
+              absolute
+              inset-0
+              rounded-2xl
+              ring-1
+              ring-inset
+              ring-white/10
+              transition-all
+              duration-500
+              group-hover:ring-white/30
+            "
+          />
+
+          {/* Viewfinder corners (same style as the cursor) */}
+          {[
+            "top-2 left-2 border-t border-l rounded-tl-md",
+            "top-2 right-2 border-t border-r rounded-tr-md",
+            "bottom-2 left-2 border-b border-l rounded-bl-md",
+            "bottom-2 right-2 border-b border-r rounded-br-md",
+          ].map((pos) => (
+            <span
+              key={pos}
+              className={`
+                pointer-events-none
+                absolute
+                h-4
+                w-4
+                border-white/70
+                opacity-0
+                scale-75
+                transition-all
+                duration-500
+                ease-out
+                group-hover:opacity-100
+                group-hover:scale-100
+                ${pos}
+              `}
+            />
+          ))}
 
           {/* Floating terminal tag — top right */}
           <div
             className="
               absolute
-              top-3
-              right-3
+              top-5
+              right-5
+              sm:top-6
+              sm:right-6
               flex
               items-center
               gap-1.5
               px-2.5
               py-1
               rounded-full
-              bg-black/70
+              bg-black/60
               border
-              border-cyan-400/40
+              border-white/20
               backdrop-blur-sm
               text-[10px]
               sm:text-[11px]
               font-mono
-              text-cyan-300
+              text-gray-100
               opacity-0
               -translate-y-2
               group-hover:opacity-100
               group-hover:translate-y-0
               transition-all
-              duration-300
+              duration-500
               delay-75
               whitespace-nowrap
             "
           >
-            <span className="text-cyan-400">{">"}</span> npm run dev
+            <span className="text-gray-400">{">"}</span> npm run dev
           </div>
 
           {/* Floating terminal tag — bottom left */}
           <div
             className="
               absolute
-              bottom-3
-              left-3
+              bottom-5
+              left-5
+              sm:bottom-6
+              sm:left-6
               flex
               items-center
               gap-1.5
               px-2.5
               py-1
               rounded-full
-              bg-black/70
+              bg-black/60
               border
-              border-cyan-400/40
+              border-white/20
               backdrop-blur-sm
               text-[10px]
               sm:text-[11px]
               font-mono
-              text-cyan-300
+              text-gray-100
               opacity-0
               translate-y-2
               group-hover:opacity-100
               group-hover:translate-y-0
               transition-all
-              duration-300
+              duration-500
               delay-150
               whitespace-nowrap
             "
           >
-            <span className="text-cyan-400">{">"}</span> const dev = true
+            <span className="text-gray-400">{">"}</span> const dev = true
           </div>
         </div>
       </div>

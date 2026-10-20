@@ -1,4 +1,10 @@
-// Tweak the "level" (0-100) numbers to match your actual confidence in each skill.
+// Skills shown on the Skills page.
+//
+// A skill WITH a `level` (0-100) is drawn as a progress bar.
+// A skill WITHOUT a `level` is drawn as a tag under the bars.
+//
+// The bar numbers are self-ratings: set them to what you honestly feel.
+// Everything else below comes from the CV.
 export const skillCategories = [
   {
     title: "Languages",
@@ -9,6 +15,7 @@ export const skillCategories = [
       { name: "Java", level: 75 },
       { name: "C", level: 78 },
       { name: "Python", level: 70 },
+      { name: "TypeScript" },
     ],
   },
   {
@@ -20,6 +27,7 @@ export const skillCategories = [
       { name: "HTML5", level: 92 },
       { name: "CSS3", level: 88 },
       { name: "Vite", level: 82 },
+      { name: "shadcn/ui" },
     ],
   },
   {
@@ -30,6 +38,7 @@ export const skillCategories = [
       { name: "Express.js", level: 80 },
       { name: "REST API", level: 85 },
       { name: "JWT", level: 78 },
+      { name: "Supabase" },
     ],
   },
   {
@@ -38,6 +47,8 @@ export const skillCategories = [
     skills: [
       { name: "MongoDB", level: 82 },
       { name: "MySQL", level: 76 },
+      { name: "PostgreSQL" },
+      { name: "Firestore (Firebase)" },
     ],
   },
   {
@@ -48,14 +59,40 @@ export const skillCategories = [
       { name: "Algorithms", level: 80 },
       { name: "DBMS", level: 78 },
       { name: "Operating Systems", level: 75 },
+      { name: "Dijkstra's Algorithm" },
     ],
   },
-];
-
-// Tools you're familiar with but don't need a progress bar for.
-export const alsoFamiliarWith = [
-  "Git",
-  "GitHub",
-  "Postman",
-  "VS Code",
+  {
+    title: "Data & ML Libraries",
+    color: "#38bdf8",
+    skills: [
+      { name: "NumPy" },
+      { name: "Pandas" },
+      { name: "Matplotlib" },
+      { name: "Scikit-learn" },
+      { name: "OpenCV" },
+      { name: "Scikit-image" },
+    ],
+  },
+  {
+    title: "Tools & Platforms",
+    color: "#fb923c",
+    skills: [
+      { name: "VS Code" },
+      { name: "Git" },
+      { name: "GitHub" },
+      { name: "Docker" },
+      { name: "Kubernetes" },
+      { name: "Kaggle" },
+    ],
+  },
+  {
+    title: "Soft Skills",
+    color: "#c084fc",
+    skills: [
+      { name: "Analytical Thinking" },
+      { name: "System Design Mindset" },
+      { name: "Clear Technical Communication" },
+    ],
+  },
 ];
