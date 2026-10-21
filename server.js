@@ -63,6 +63,57 @@ The portfolio also has a working terminal (open with the terminal icon or Ctrl+\
 like 'help', 'ls', 'about', 'projects', 'skills', 'contact', and 'open <file>'. Mention it if the
 person asks how else they can explore the site.`;
 
+// Different Google accounts can access different model names.
+// They are tried in order until one works.
+const CANDIDATE_MODELS = [
+  "gemini-3.6-flash",
+  "gemini-flash-latest",
+  "gemini-2.5-flash",
+  "gemini-2.0-flash",
+  "gemini-pro-latest",
+];
+
+// Gemini 3 models "think" before answering, which is slow for a small chatbot.
+// "low" makes them answer faster. If Gemini ever rejects this setting, the
+// server switches it off by itself and keeps working.
+let sendThinkingLevel = true;
+
+const GEMINI_TIMEOUT_MS = 25000;
+
+async function callGemini(model, contents, apiKey, withThinking) {
+  const generationConfig = { maxOutputTokens: 800 };
+
+  if (withThinking) {
+    generationConfig.thinkingConfig = { thinkingLevel: "low" };
+  }
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), GEMINI_TIMEOUT_MS);
+
+  try {
+    return await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          contents,
+          generationConfig,
+        }),
+      }
+    );
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// Lightweight route used to check the server (and to keep it awake, see README).
+app.get("/api/health", (req, res) => {
+  res.json({ ok: true });
+});
+
 app.post("/api/chat", async (req, res) => {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -77,49 +128,44 @@ app.post("/api/chat", async (req, res) => {
   }
 
   try {
-    // Google Gemini (free tier) — generateContent endpoint.
     // Gemini uses "model" instead of "assistant" for the AI's role.
     const contents = messages.map((m) => ({
       role: m.role === "assistant" ? "model" : "user",
       parts: [{ text: m.content }],
     }));
 
-    // Different Google accounts have access to different model names.
-    // Try them in order until one works, instead of hard-failing on the first 404.
-    const CANDIDATE_MODELS = [
-      "gemini-3.6-flash",
-      "gemini-flash-latest",
-      "gemini-2.5-flash",
-      "gemini-2.0-flash",
-      "gemini-pro-latest",
-    ];
-
     let response;
     let lastErrText = "";
 
     for (const model of CANDIDATE_MODELS) {
-      response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-            contents,
-            generationConfig: { maxOutputTokens: 600 },
-          }),
+      const wantsThinking = sendThinkingLevel && model.startsWith("gemini-3");
+
+      response = await callGemini(model, contents, apiKey, wantsThinking);
+
+      // If only the thinking setting was the problem, retry without it.
+      if (response.status === 400 && wantsThinking) {
+        lastErrText = await response.text();
+
+        if (/thinking/i.test(lastErrText)) {
+          console.warn("Gemini rejected thinkingLevel; disabling it.");
+          sendThinkingLevel = false;
+          response = await callGemini(model, contents, apiKey, false);
+        } else {
+          return res.status(400).json({ error: lastErrText });
         }
-      );
+      }
 
       if (response.ok) break;
 
       lastErrText = await response.text();
+
       // 404 = this model name isn't available on this key; try the next one.
       // Any other error (bad key, quota, etc.) — stop and report it.
       if (response.status !== 404) break;
     }
 
     if (!response.ok) {
+      console.error("Gemini error", response.status, lastErrText);
       return res.status(response.status).json({ error: lastErrText });
     }
 
@@ -129,6 +175,12 @@ app.post("/api/chat", async (req, res) => {
       "Sorry, I couldn't generate a response.";
     return res.json({ reply });
   } catch (err) {
+    if (err.name === "AbortError") {
+      console.error("Gemini request timed out");
+      return res.status(504).json({ error: "The AI took too long to answer" });
+    }
+
+    console.error("Chat request failed", err);
     return res.status(500).json({ error: "Upstream request failed" });
   }
 });
